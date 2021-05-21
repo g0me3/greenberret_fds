@@ -8173,6 +8173,7 @@ _unrom_prg:
 		STA		_cur_prg_bank
 		TAY
 		STA		_unrom_cmd,Y
+		STA		_unrom_cmd,Y
 		RTS
 _unrom_cmd:
 		.BYTE	$00,$01,$02,$03,$04,$05,$06,$07

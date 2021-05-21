@@ -1961,7 +1961,7 @@ loc_4C26D:
 		ADC		#$01
 		STA		byte_541,Y
 loc_4C276:
-		JMP		$BFEA
+		JMP		sub_BFEA
 
 ; =============== S U B	R O U T	I N E =======================================
 sub_4C279:
