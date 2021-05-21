@@ -1,6 +1,4 @@
 
-;		ORG $8080
-
 ; =============== S U B	R O U T	I N E =======================================
 RESET:
 		CLI
@@ -13,12 +11,6 @@ RESET:
 		LDA		#$C0
 		STA		byte_100
 		JSR		_nmi_off_render_off
-;		LDA		#$01
-;		JSR		_integrity_test
-;		BNE		_j_BIOS_RESET
-;		LDA		#$09
-;		JSR		_integrity_test
-;		BNE		_j_BIOS_RESET
 		LDX		#$F0
 		LDA		#$00
 loc_80A6:
@@ -42,10 +34,6 @@ loc_80AB:
 		JSR		_apu_load_safe
 _MAIN_IDLE_LOOP:
 		JMP		_MAIN_IDLE_LOOP
-
-; =============== S U B	R O U T	I N E =======================================
-;_j_BIOS_RESET:
-;		JMP		_BIOS_RESET
 
 ; =============== S U B	R O U T	I N E =======================================
 NMI:
@@ -176,9 +164,6 @@ _ppu_ctrl_set:
 
 ; =============== S U B	R O U T	I N E =======================================
 _nmi_off_render_off:
-;		LDA		#$47
-;		STA		byte_FA
-;		STA		_FDS_REG25
 		LDA		#$00
 		STA		_PPU_MASK
 		BEQ		_ppu_ctrl_set
@@ -393,10 +378,6 @@ _apu_load_safe:
 		RTS
 
 ; =============== S U B	R O U T	I N E =======================================
-;_unref:
-;		RTS
-
-; =============== S U B	R O U T	I N E =======================================
 _main_sub_exec:
 		INC		_frames_counter
 		LDA		_main_sub_idx
@@ -417,36 +398,45 @@ loc_8243:
 		.WORD _main07_stage_complete_init
 		.WORD _main08_stage_complete_anim
 		.WORD _main09_ending
-;		.WORD _main0A_loading_screen
 
 ; =============== S U B	R O U T	I N E =======================================
 _bios_fonts_load:
 		JSR		_nmi_off_render_off
-		LDX		#$01
-		LDA		#$0C
+		LDA		#<[_BIOS_chr_fonts_data]
+		STA		word_0
+		LDA		#>[_BIOS_chr_fonts_data]
+		STA		word_0+1
+		LDX		#$27
+		STX		byte_2
+		LDA		_PPU_STATUS
+		LDA		_ppu_ctrl_shadow
+		AND		#$FB
+		STA		_ppu_ctrl_shadow
+		STA		_PPU_CTRL
+		LDA		#$00
+		STA		_PPU_ADDR
+		STA		_PPU_ADDR
 		LDY		#$00
-		STY		_ppu_ctrl_shadow
-		JSR		_BIOS_1bpp_chr_load
-; ---------------------------------------------------------------------------
-		.WORD _BIOS_chr_fonts_data+$120
-; ---------------------------------------------------------------------------
-		LDX		#$02
-		LDA		#$5C
-		LDY		#$02
-		JSR		_BIOS_1bpp_chr_load
-; ---------------------------------------------------------------------------
-		.WORD _BIOS_chr_fonts_data+$128
-; ---------------------------------------------------------------------------
-		LDX		#$24
-		LDA		#$1C
-		LDY		#$00
-		JSR		_BIOS_1bpp_chr_load
-; ---------------------------------------------------------------------------
-		.WORD _BIOS_chr_fonts_data
-; ---------------------------------------------------------------------------
+_unp_half_inv_mode:
+		LDX		#$08
+loc_EBA3:
+		LDA		(word_0),Y
+		STA		_PPU_DATA
+		INY
+		DEX
+		BNE		loc_EBA3
+		LDA		#$00
+		LDX		#$08
+loc_EB7C:
+		STA		_PPU_DATA
+		DEX
+		BNE		loc_EB7C
+		DEC		byte_2
+		BNE		_unp_half_inv_mode
 		JMP		_render_on
 ;
 _BIOS_chr_fonts_data:
+		.BYTE $00,$00,$00,$00,$00,$00,$00,$00
 		.BYTE $38,$4C,$C6,$C6,$C6,$64,$38,$00
 		.BYTE $18,$38,$18,$18,$18,$18,$7E,$00
 		.BYTE $7C,$C6,$0E,$3C,$78,$E0,$FE,$00
@@ -483,175 +473,17 @@ _BIOS_chr_fonts_data:
 		.BYTE $C6,$EE,$7C,$38,$7C,$EE,$C6,$00
 		.BYTE $66,$66,$66,$3C,$18,$18,$18,$00
 		.BYTE $FE,$0E,$1C,$38,$70,$E0,$FE,$00
-		.BYTE $00,$00,$00,$00,$00,$00,$00,$00
 		.BYTE $00,$00,$00,$00,$30,$30,$20,$00
 		.BYTE $00,$00,$00,$00,$30,$30,$00,$00
-		.BYTE $00,$00,$00,$00,$6C,$6C,$08,$00
-		.BYTE $38,$44,$BA,$AA,$B2,$AA,$44,$38
-
-; =============== S U B	R O U T	I N E =======================================
-_BIOS_ppu_chr_unp_data_ptr_add8:
-		LDA		#$08
-
-; =============== S U B	R O U T	I N E =======================================
-_BIOS_ppu_chr_unp_data_ptr_add:
-		PHP
-		LDY		#$00
-		CLC
-		ADC		word_0
-		STA		word_0
-		LDA		#$00
-		ADC		word_0+1
-		STA		word_0+1
-		PLP
-		DEC		byte_2
-		RTS
-
-; =============== S U B	R O U T	I N E =======================================
-_BIOS_ppu_write_read_chunk:
-		LDX		#$08
-loc_EB7C:
-		BCS		loc_EB88
-		LDA		(word_0),Y
-		STA		_PPU_DATA
-loc_EB83:
-		INY
-		DEX
-		BNE		loc_EB7C
-		RTS
-; ---------------------------------------------------------------------------
-loc_EB88:
-		LDA		_PPU_DATA
-		STA		(word_0),Y
-		BCS		loc_EB83
-
-; =============== S U B	R O U T	I N E =======================================
-_BIOS_ppu_fill_chunk:
-		LDA		byte_3
-		LDX		#$08
-loc_EB93:
-		BCS		loc_EB9C
-		STA		_PPU_DATA
-loc_EB98:
-		DEX
-		BNE		loc_EB93
-		RTS
-; ---------------------------------------------------------------------------
-loc_EB9C:
-		LDA		_PPU_DATA
-		BCS		loc_EB98
-
-; =============== S U B	R O U T	I N E =======================================
-_BIOS_ppu_chr_xor_chunk:
-		LDX		#$08
-loc_EBA3:
-		LDA		byte_3
-		EOR		(word_0),Y
-		STA		_PPU_DATA
-		INY
-		DEX
-		BNE		loc_EBA3
-		RTS
-
-; =============== S U B	R O U T	I N E =======================================
-_BIOS_get_params2:
-		TSX
-		LDA		byte_103,X
-		STA		word_4+1
-		LDA		byte_104,X
-		STA		byte_6
-		LDY		#$01
-		LDA		(word_4+1),Y
-		STA		word_0
-		INY
-		LDA		(word_4+1),Y
-		STA		word_0+1
-		CLC
-		LDA		#$02
-		ADC		word_4+1
-		STA		$0103,X
-		LDA		#$00
-		ADC		byte_6
-		STA		$0104,X
-		RTS
-
-; =============== S U B	R O U T	I N E =======================================
-_BIOS_1bpp_chr_load:
-		STA		word_4
-		STX		byte_2
-		STY		byte_3
-		JSR		_BIOS_get_params2
-		LDA		_PPU_STATUS
-		LDA		_ppu_ctrl_shadow
-		AND		#$FB
-		STA		_ppu_ctrl_shadow
-		STA		_PPU_CTRL
-		LDY		byte_3
-		STY		_PPU_ADDR
-		LDA		word_4
-		AND		#$F0
-		STA		_PPU_ADDR
-		LDA		#$00
-		STA		byte_3
-		LDA		word_4
-		AND		#$0F
-		LSR
-		BCC		loc_EBDD
-		DEC		byte_3
-loc_EBDD:
-		LSR
-		BCC		loc_EBE3
-		LDX		_PPU_DATA
-loc_EBE3:
-		TAY
-		BEQ		_unp_half_copy_mode
-		DEY
-		BEQ		_unp_half1_fill_mode
-		DEY
-		BEQ		_unp_half2_fill_mode
-		DEY
-_unp_half_inv_mode:
-		JSR		_BIOS_ppu_chr_xor_chunk
-		LDY		#$00
-		JSR		_BIOS_ppu_write_read_chunk
-		JSR		_BIOS_ppu_chr_unp_data_ptr_add8
-		BNE		_unp_half_inv_mode
-		RTS
-; ---------------------------------------------------------------------------
-_unp_half_copy_mode:
-		JSR		_BIOS_ppu_write_read_chunk
-		JSR		_BIOS_ppu_write_read_chunk
-		LDA		#$10
-		JSR		_BIOS_ppu_chr_unp_data_ptr_add
-		BNE		_unp_half_copy_mode
-		RTS
-; ---------------------------------------------------------------------------
-_unp_half1_fill_mode:
-		JSR		_BIOS_ppu_write_read_chunk
-		JSR		_BIOS_ppu_fill_chunk
-		JSR		_BIOS_ppu_chr_unp_data_ptr_add8
-		BNE		_unp_half1_fill_mode
-		RTS
-; ---------------------------------------------------------------------------
-_unp_half2_fill_mode:
-		JSR		_BIOS_ppu_fill_chunk
-		JSR		_BIOS_ppu_write_read_chunk
-		JSR		_BIOS_ppu_chr_unp_data_ptr_add8
-		BNE		_unp_half2_fill_mode
-		RTS
-
-; =============== S U B	R O U T	I N E =======================================
-;nullsub_5:
-;		RTS
 
 ; =============== S U B	R O U T	I N E =======================================
 _main00_title_init:
 		LDA		#$01
 		STA		byte_20
-		LDA		#$12
-		JSR		_fds_data_load
-		LDA		#$08
-		JSR		_fds_data_load
+		LDA		#$00
+		JSR		_file_lib_unpack
+		LDA		#$0B
+		JSR		_file_lib_unpack
 		JSR		_title_screen_draw
 		LDA		#$04
 		STA		_delay_counter+1
@@ -1015,7 +847,7 @@ loc_8508:
 		JSR		sub_A509
 		LDA		#$03
 		STA		_game_main_sub_idx
-		LDA		#$17
+		LDA		#$0C
 		JMP		_file_lib_unpack
 ; ---------------------------------------------------------------------------
 byte_8524:
@@ -1044,16 +876,14 @@ _main07_stage_complete_init:
 		LDX		_1p_stage
 		CPX		#$05
 		BEQ		loc_855E
-		LDA		#$09
+		LDA		#$07
 		JSR		_file_lib_unpack
 		JSR		_render_on_nmi_on
 		JMP		loc_8568
 ; ---------------------------------------------------------------------------
 loc_855E:
-		LDA		#$10
-		JSR		_fds_data_load
-		LDA		#$07
-		JSR		_fds_data_load
+		LDA		#$09
+		JSR		_file_lib_unpack
 loc_8568:
 		JSR		_bios_fonts_load
 		LDA		#$1C
@@ -1611,7 +1441,7 @@ _main09_ending:
 
 ; =============== S U B	R O U T	I N E =======================================
 _ending02:
-		LDA		#$15
+		LDA		#$0A
 		JSR		_file_lib_unpack
 		JSR		_screen_clear
 		JSR		_fds_load_bufs_clear
@@ -1763,8 +1593,8 @@ _ending06:
 ; =============== S U B	R O U T	I N E =======================================
 sub_8A5D:
 		JSR		_screen_clear
-		LDA		#$0F
-		JSR		_fds_data_load
+		LDA		#$07
+		JSR		_file_lib_unpack
 		JMP		loc_873B
 
 ; =============== S U B	R O U T	I N E =======================================
@@ -2991,52 +2821,6 @@ _screen_libs:
 		.WORD _screen_lib4_regular_stage_complete
 		.WORD _screen_lib6_intro
 		.WORD _screen_lib8_final_stage_complete
-_screen_lib0_blank:
-		.WORD _scr0_01
-		.WORD _scr0_01
-		.WORD _scr0_23
-		.WORD _scr0_23
-_scr0_01:
-		.BYTE $34,$C0,$00,$34,$C0,$00,$34,$C0,$00,$34,$E0,$00,$34,$E0,$00
-_scr0_23:
-		.BYTE $39
-_screen_lib4_regular_stage_complete:
-		.WORD _scr4_0
-		.WORD _scr4_1
-		.WORD _scr4_2
-		.WORD _scr4_3
-_scr4_0:
-		.BYTE $34,$80,$00,$34,$C0,$00,$30,$34,$07,$31,$34,$18,$00,$40,$00,$32
-		.BYTE $33,$27,$35,$36,$34,$1A,$00,$41,$42,$43,$44,$45,$46,$34,$14,$00
-		.BYTE $4F,$34,$04,$00,$50,$34,$07,$51,$34,$12,$00,$5C,$5F,$34,$04,$00
-		.BYTE $30,$34,$07,$31,$34,$11,$00,$5C,$4E,$6F,$34,$04,$00,$39
-_scr4_1:
-		.BYTE $40,$00,$32,$00,$00,$00,$32,$34,$0B,$00,$2E,$2F,$34,$04,$00,$5C
-		.BYTE $4E,$5E,$6F,$34,$05,$00,$41,$42,$52,$53,$54,$42,$34,$0B,$00,$3E
-		.BYTE $3F,$00,$00,$00,$5F,$4E,$4C,$4C,$6F,$34,$05,$00,$41,$42,$62,$63
-		.BYTE $64,$42,$34,$04,$00,$37,$38,$38,$28,$28,$38,$38,$38,$28,$38,$28
-		.BYTE $5C,$6C,$5E,$5E,$5E,$6F,$34,$05,$00,$41,$42,$52,$53,$54,$42,$34
-		.BYTE $04,$00,$47,$34,$09,$48,$3B,$4E,$6C,$4C,$4C,$4C,$6F,$34,$05,$00
-		.BYTE $41,$42,$62,$63,$64,$42,$34,$04,$00,$57,$34,$04,$58,$2A,$2A,$58
-		.BYTE $59,$58,$5A,$5E,$6C,$5E,$5E,$5E,$6F,$34,$05,$00,$41,$42,$52,$53
-		.BYTE $54,$42,$00,$55,$56,$55,$56,$58,$58,$2B,$2B,$67,$68,$69,$5A,$78
-		.BYTE $5A,$4C,$6C,$4C,$4C,$4C,$6F,$34,$05,$00,$61,$42,$62,$63,$64,$42
-		.BYTE $00,$65,$66,$65,$66,$58,$58,$2B,$2B,$77,$00,$79,$58,$58,$5A,$5E
-		.BYTE $6C,$5E,$5E,$5E,$6F,$34,$05,$00,$39
-_scr4_2:
-		.BYTE $61,$42,$00,$00,$61,$42,$00,$65,$66,$65,$66,$58,$49,$58,$58,$77
-		.BYTE $00,$55,$56,$55,$56,$4C,$6C,$4C,$4C,$4C,$6F,$6A,$3C,$6A,$3D,$29
-		.BYTE $60,$42,$29,$29,$60,$42,$29,$75,$76,$75,$76,$4D,$58,$58,$4A,$77
-		.BYTE $00,$65,$66,$65,$66,$6D,$6C,$6D,$6D,$6D,$6F,$4B,$4B,$5B,$4B,$29
-		.BYTE $70,$71,$29,$29,$70,$71,$34,$05,$29,$34,$04,$3A,$29,$29,$65,$66
-		.BYTE $65,$66,$6D,$6C,$6D,$6D,$6D,$6F,$4D,$4B,$4B,$5B,$34,$12,$29,$75
-		.BYTE $76,$75,$76,$6E,$6C,$6D,$6D,$6D,$6F,$29,$4D,$4B,$4B,$34,$16,$29
-		.BYTE $70,$71,$5D,$6E,$6E,$6F,$29,$29,$4D,$4B,$34,$1A,$29,$5D,$6F,$29
-		.BYTE $29,$29,$4D,$39
-_scr4_3:
-		.BYTE $34,$34,$23,$C8,$34,$08,$00,$50,$5C,$34,$06,$00,$55,$55,$00,$00
-		.BYTE $40,$00,$54,$00,$55,$55,$44,$34,$04,$55,$00,$55,$55,$AA,$51,$95
-		.BYTE $65,$55,$50,$34,$04,$55,$59,$56,$55,$55,$39
 
 ; =============== S U B	R O U T	I N E =======================================
 _hud_draw_handlers:
@@ -3298,1263 +3082,6 @@ loc_95F1:
 		JMP		sub_95CF
 
 ; =============== S U B	R O U T	I N E =======================================
-;_tlm_lib_loadA_unref:
-;		STX		word_4
-;		JSR		_tlm_lib_load
-;		LDA		word_4
-;		BNE		_tlm_lib_load_ex
-
-; =============== S U B	R O U T	I N E =======================================
-_tlm_lib_load:
-		PHA
-		LDA		#$02
-		STA		byte_3
-		LDA		#$01
-		JSR		_ppu_queue_byte_insert
-		PLA
-
-; =============== S U B	R O U T	I N E =======================================
-;_tlm_lib_load_ex:
-		STA		byte_2
-		ASL
-		TAX
-		LDA		_tlm_lib,X
-		STA		word_0
-		LDA		_tlm_lib+1,X
-		STA		word_0+1
-		LDX		_ppu_queue_pos
-		LDY		#$00
-loc_9622:
-		LDA		(word_0),Y
-		INY
-		CMP		#$FF
-		BEQ		_ppu_queue_pos_set
-		CMP		#$FE
-		BEQ		loc_9646
-		CMP		#$FD
-		BEQ		loc_964A
-		STA		_ppu_queue_buf,X
-		LDA		byte_2
-		BPL		loc_9643
-		LDA		byte_3
-		BNE		loc_9641
-		STA		_ppu_queue_buf,X
-		BEQ		loc_9643
-loc_9641:
-		DEC		byte_3
-loc_9643:
-		INX
-		BNE		loc_9622
-loc_9646:
-		LDA		#$FF
-		BNE		_ppu_queue_byte_insert_ex
-loc_964A:
-		LDA		#$FF
-		JSR		_ppu_queue_byte_insert_ex
-		LDA		#$02
-		STA		byte_3
-		LDA		#$01
-		JSR		_ppu_queue_byte_insert_ex
-		BNE		loc_9622
-		LDA		#$FF
-		BNE		_ppu_queue_byte_insert
-
-; =============== S U B	R O U T	I N E =======================================
-_ppu_queue_byte00_insert:
-		LDA		#$00
-		BEQ		_ppu_queue_byte_insert
-
-; =============== S U B	R O U T	I N E =======================================
-_ppu_queue_byte_insert:
-		LDX		_ppu_queue_pos
-
-; =============== S U B	R O U T	I N E =======================================
-_ppu_queue_byte_insert_ex:
-		STA		_ppu_queue_buf,X
-		INX
-		PHA
-		LDA		#$00
-		STA		_ppu_queue_buf,X
-		PLA
-
-; =============== S U B	R O U T	I N E =======================================
-_ppu_queue_pos_set:
-		STX		_ppu_queue_pos
-		RTS
-
-; ---------------------------------------------------------------------------
-_tlm_lib:
-		.WORD _tlm01_1_player
-		.WORD _tlm01_1_player
-		.WORD _tlm02_2_players
-		.WORD _tlm03_play_select
-		.WORD _tlm04_konami_1897
-		.WORD _tlm05_dummy
-		.WORD _tlm06_pal
-		.WORD _tlm07_blank
-		.WORD _tlm08_ab
-		.WORD _tlm09_1p
-		.WORD _tlm0A_2p
-		.WORD _tlm0B_please_set
-		.WORD _tlm0C_err
-		.WORD _tlm0D_blank
-		.WORD _tlm0E_d0fe
-		.WORD _tlm0F_d0fe
-		.WORD _tlm10_game_over
-		.WORD _tlm11_blank
-		.WORD _tlm12_blank
-		.WORD _tlm13_pal
-		.WORD _tlm14_continue
-		.WORD _tlm17_yes
-		.WORD _tlm16_no
-		.WORD _tlm17_yes
-		.WORD _tlm18_pal
-		.WORD _tlm19_bg_pal
-		.WORD _tlm1A_bg_pal
-		.WORD _tlm1B_bg_pal
-		.WORD _tlm1C_pal
-		.WORD _tlm1D_staff
-		.WORD _tlm1E_blank
-		.WORD _tlm1F_blank
-		.WORD _tlm20_please_push_start_button
-		.WORD _tlm21_blank
-		.WORD _tlm22_bg_pal
-		.WORD _tlm23_bg_pal
-		.WORD _tlm24_bg_pal
-		.WORD _tlm25_bg_pal
-		.WORD _tlm26_ending
-		.WORD _tlm27_ending
-		.WORD _tlm28_ending
-		.WORD _tlm29_ending
-		.WORD _tlm2A_ending
-		.WORD _tlm2B_ending
-		.WORD _tlm2C_ending
-		.WORD _tlm2D_ending
-		.WORD _tlm2E_ending
-		.WORD _tlm2F_ending
-		.WORD _tlm30_ending
-		.WORD _tlm31_ending
-		.WORD _tlm32_ending
-		.WORD _tlm33_ending
-		.WORD _tlm34_ending
-		.WORD _tlm35_ending
-		.WORD _tlm36_ending
-		.WORD _tlm37_ending
-		.WORD _tlm38_ending
-		.WORD _tlm39_ending
-		.WORD _tlm3A_ending
-		.WORD _tlm3B_ending
-		.WORD _tlm3C_ending
-		.WORD _tlm3D_ending
-		.WORD _tlm3E_ending
-		.WORD _tlm3F_ending
-		.WORD _tlm40_ending
-		.WORD _tlm41_ending
-		.WORD _tlm42_ending
-		.WORD _tlm43_ending
-		.WORD _tlm44_ending
-		.WORD _tlm45_ending
-		.WORD _tlm46_ending
-		.WORD _tlm47_ending
-		.WORD _tlm48_ending
-		.WORD _tlm49_ending
-		.WORD _tlm4A_pal
-		.WORD _tlm4B_loading
-		.WORD _tlm4C_pal
-		.WORD _tlm4D_pal
-		.WORD _tlm4E_pal
-		.WORD _tlm4F_pal
-		.WORD _tlm50_pal
-		.WORD _tlm51_pal
-		.WORD _tlm52_pal
-		.WORD _tlm53_bg_pal
-		.WORD _tlm54_your_mission
-		.WORD _tlm55_bg_pal
-		.WORD _tlm56_bg_pal
-_tlm54_your_mission:
-		.WORD $A520
-		.BYTE $23,$19,$1F,$1C,$00,$17,$13,$1D,$1D,$13,$19,$18
-		.BYTE $FD
-		.WORD $E820
-		.BYTE $0E,$0F,$1D,$1E,$1C,$19,$23,$00,$0F,$18,$0F,$17,$23
-		.BYTE $FD
-		.WORD $2721
-		.BYTE $1D,$0F,$0D,$1C,$0F,$1E,$00,$21,$0F,$0B,$1A,$19,$18,$26
-		.BYTE $FD
-		.WORD $8A21
-		.BYTE $11,$19,$19,$0E,$00,$16,$1F,$0D,$15,$26
-		.BYTE $FE
-_tlm0B_please_set:
-		.WORD	$E921
-		.BYTE $1A,$16,$0F,$0B,$1D,$0F,$00,$1D,$0F,$1E,$00,$00
-		.BYTE $FE
-_tlm0C_err:
-		.WORD $ED21
-		.BYTE $0F,$1C,$1C,$00,$00,$00
-		.BYTE $FE
-_tlm4B_loading:
-		.WORD $ED21
-		.BYTE $16,$19,$0B,$0E,$13,$18,$11,$00,$00
-		.BYTE $FE
-_tlm4C_pal:
-		.BYTE $3F,$00,$0F,$0F,$0F,$20,$0F,$0F,$0F,$20,$0F,$0F,$0F,$20,$0F,$0F
-		.BYTE $0F,$20,$FE
-_tlm03_play_select:
-		.WORD $AB22
-		.BYTE $1A,$16,$0B,$23,$00,$1D,$0F,$16,$0F,$0D,$1E
-		.BYTE $FE
-_tlm04_konami_1897:
-		.WORD $4A22
-		.BYTE $F9
-		.BYTE $00,$15,$19,$18,$0B,$17,$13,$00,$02,$0A,$09,$08
-		.BYTE $FE
-_tlm01_1_player:
-		.WORD $EE22
-		.BYTE $02,$00,$1A,$16,$0B,$23,$0F,$1C
-		.BYTE $FE
-_tlm02_2_players:
-		.WORD $0E23
-		.BYTE $03,$00,$1A,$16,$0B,$23,$0F,$1C,$1D
-		.BYTE $FE
-_tlm14_continue:
-		.WORD $0B22
-		.BYTE $0D,$19,$18,$1E,$13,$18,$1F,$0F
-		.BYTE $FE
-_tlm17_yes:
-		.WORD $4E22
-		.BYTE $23,$0F,$1D
-		.BYTE $FE
-_tlm16_no:
-		.WORD $8E22
-		.BYTE $18,$19
-		.BYTE $FE
-_tlm07_blank:
-		.WORD $6020
-		.BYTE $00
-		.BYTE $FF
-_tlm0D_blank:
-		.WORD $7920
-		.BYTE $00
-		.BYTE $FF
-_tlm08_ab:
-		.WORD $4B20
-		.BYTE $0B,$0C,$00
-		.BYTE $FF
-_tlm09_1p:
-		.WORD $4020
-		.BYTE $02,$0E,$00
-		.BYTE $FF
-_tlm0A_2p:
-		.WORD $5620
-		.BYTE $03,$0E,$00
-		.BYTE $FF
-_tlm0E_d0fe:
-		.WORD $6820
-		.BYTE $0E,$01,$10,$0F
-		.BYTE $FF
-_tlm0F_d0fe:
-		.WORD $7320
-		.BYTE $0E,$01,$10,$0F
-		.BYTE $FF
-_tlm06_pal:
-		.BYTE $3F,$00,$0F,$00,$10,$30,$0F,$19,$27,$15,$0F,$15,$26,$10,$0F,$27
-		.BYTE $16,$21,$0F,$0C,$26,$30,$0F,$0C,$2C,$30,$0F,$12,$26,$30,$0F,$06
-		.BYTE $30,$30,$FE
-_tlm05_dummy:
-		.WORD $0020
-		.BYTE $FE
-_tlm4D_pal:
-		.BYTE $3F,$00,$0F,$3B,$00,$30,$0F,$10,$00,$30,$0F,$19,$00,$09,$0F,$3B
-		.BYTE $17,$07,$0F,$12,$0F,$27,$0F,$16,$0F,$38,$0F,$27,$0F,$38,$0F,$20
-		.BYTE $0F,$17,$FE
-_tlm4E_pal:
-		.BYTE $3F,$00,$0F,$00,$10,$30,$0F,$00,$18,$20,$0F,$1A,$18,$28,$0F,$32
-		.BYTE $1A,$22,$0F,$12,$0F,$27,$0F,$16,$0F,$38,$0F,$27,$0F,$38,$0F,$07
-		.BYTE $0F,$20,$FE
-_tlm4F_pal:
-		.BYTE $3F,$00,$0F,$01,$00,$30,$0F,$10,$00,$30,$0F,$19,$00,$09,$0F,$31
-		.BYTE $00,$30,$0F,$12,$0F,$27,$0F,$16,$0F,$38,$0F,$27,$0F,$38,$0F,$20
-		.BYTE $0F,$07,$FE
-_tlm50_pal:
-		.BYTE $3F,$00,$0F,$3B,$00,$30,$0F,$10,$00,$30,$0F,$19,$00,$09,$0F,$3B
-		.BYTE $17,$06,$0F,$12,$0F,$27,$0F,$16,$0F,$38,$0F,$27,$0F,$38,$0F,$07
-		.BYTE $0F,$20,$FE
-_tlm51_pal:
-		.BYTE $3F,$00,$0F,$17,$00,$30,$0F,$10,$00,$30,$0F,$08,$00,$30,$0F,$2B
-		.BYTE $06,$07,$0F,$12,$0F,$27,$0F,$16,$0F,$38,$0F,$27,$0F,$38,$0F,$07
-		.BYTE $0F,$20,$FE
-_tlm52_pal:
-		.BYTE $3F,$00,$0F,$0B,$00,$30,$0F,$0B,$09,$37,$0F,$0B,$18,$3A,$0F,$0B
-		.BYTE $17,$27,$0F,$12,$0F,$27,$0F,$16,$0F,$38,$0F,$27,$0F,$38,$0F,$08
-		.BYTE $0F,$30,$FE
-_tlm53_bg_pal:
-		.BYTE $3F,$00,$0F,$00,$10,$30,$0F,$10,$06,$07,$0F,$18,$08,$0F,$0F,$10
-		.BYTE $00,$0F,$FE
-_tlm55_bg_pal:
-		.BYTE $3F,$00,$0F,$00,$10,$30,$0F,$10,$06,$07,$0F,$17,$07,$0F,$0F,$10
-		.BYTE $00,$0F,$FE
-_tlm56_bg_pal:
-		.BYTE $3F,$00,$0F,$00,$10,$30,$0F,$10,$06,$07,$0F,$10,$00,$0F,$0F,$10
-		.BYTE $00,$0F,$FE
-_tlm10_game_over:
-		.WORD $8B21
-		.BYTE $11,$0B,$17,$0F,$00,$19,$20,$0F,$1C
-		.BYTE $FE
-_tlm11_blank:
-		.WORD $6020
-		.BYTE $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-		.BYTE $FE
-_tlm12_blank:
-		.WORD $7320
-		.BYTE $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-		.BYTE $FE
-_tlm13_pal:
-		.BYTE $3F,$00,$0F,$1B,$00,$30,$0F,$10,$00,$30,$0F,$19,$00,$09,$0F,$1B
-		.BYTE $17,$07,$0F,$12,$0F,$27,$0F,$16,$0F,$38,$0F,$00,$06,$16,$0F,$27
-		.BYTE $0F,$38,$FE
-_tlm18_pal:
-		.BYTE $3F,$00,$0F,$10,$00,$20,$0F,$0B,$00,$19,$0F,$02,$28,$30,$0F,$16
-		.BYTE $28,$20,$0F,$12,$0F,$27,$0F,$16,$0F,$37,$0F,$38,$1B,$0A,$0F,$27
-		.BYTE $0F,$37,$FE
-_tlm19_bg_pal:
-		.BYTE $3F,$00,$0F,$10,$00,$20,$0F,$0B,$00,$19,$0F,$12,$28,$20,$0F,$16
-		.BYTE $28,$20,$FE
-_tlm1A_bg_pal:
-		.BYTE $3F,$00,$0F,$10,$00,$20,$0F,$0B,$00,$19,$0F,$22,$28,$10,$0F,$16
-		.BYTE $28,$20,$FE
-_tlm1B_bg_pal:
-		.BYTE $3F,$00,$0F,$10,$00,$20,$0F,$0B,$00,$19,$0F,$12,$28,$20,$0F,$16
-		.BYTE $28,$20,$FE
-_tlm1C_pal:
-		.BYTE $3F,$00,$0F,$16,$06,$30,$0F,$08,$18,$30,$0F,$27,$16,$21,$0F,$27
-		.BYTE $16,$21,$0F,$12,$0F,$27,$0F,$16,$0F,$38,$0F,$2A,$0F,$38,$0F,$16
-		.BYTE $0F,$27,$FE
-_tlm1D_staff:
-		.WORD $ED20
-		.BYTE $1D,$1E,$0B,$10,$10
-		.BYTE $FE
-_tlm1E_blank:
-		.WORD $6021
-		.BYTE $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-		.BYTE $00,$00,$00,$00,$00
-		.BYTE $FE
-_tlm1F_blank:
-		.WORD $A021
-		.BYTE $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-		.BYTE $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-		.BYTE $FE
-_tlm20_please_push_start_button:
-		.WORD $A321
-		.BYTE $1A,$16,$0F,$0B,$1D,$0F,$00,$1A,$1F,$1D,$12,$00,$1D,$1E,$0B,$1C
-		.BYTE $1E,$00,$0C,$1F,$1E,$1E,$19,$18
-		.BYTE $FE
-_tlm21_blank:
-		.WORD $ED20
-		.BYTE $00,$00,$00,$00,$00
-		.BYTE $FE
-_tlm22_bg_pal:
-		.BYTE $3F,$00,$0F,$0B,$00,$30,$0F,$0B,$09,$37,$0F,$0B,$01,$3A,$0F,$0B
-		.BYTE $17,$27,$FE
-_tlm23_bg_pal:
-		.BYTE $3F,$00,$0F,$06,$00,$30,$0F,$0B,$09,$37,$0F,$0B,$11,$3A,$0F,$0B
-		.BYTE $17,$27,$FE
-_tlm24_bg_pal:
-		.BYTE $3F,$00,$0F,$16,$00,$30,$0F,$0B,$09,$37,$0F,$0B,$21,$3A,$0F,$0B
-		.BYTE $17,$27,$FE
-_tlm25_bg_pal:
-		.BYTE $3F,$00,$30,$16,$06,$30,$30,$08,$18,$30,$30,$27,$16,$21,$30,$27
-		.BYTE $16,$21,$FE
-_tlm4A_pal:
-		.BYTE $3F,$00,$0F,$16,$06,$30,$0F,$08,$18,$30,$0F,$27,$16,$21,$0F,$27
-		.BYTE $16,$21,$0F,$12,$01,$27,$0F,$16,$07,$38,$0F,$20,$0F,$38,$0F,$1A
-		.BYTE $09,$27
-byte_9ADB:
-		.BYTE $FE
-_ppu_unpack_flags_list:
-		.BYTE $00,$04
-
-; =============== S U B	R O U T	I N E =======================================
-_spr_insert:
-		LDY		#$00
-		LDA		(byte_8),Y
-		BNE		loc_9B45
-		RTS
-; ---------------------------------------------------------------------------
-loc_9B45:
-		STA		byte_3
-		INY
-		LDA		(byte_8),Y
-		STA		byte_7
-		INY
-		LDA		(byte_8),Y
-		STA		byte_F
-		INY
-		LDX		word_4
-loc_9B54:
-		LDA		(byte_8),Y
-		CLC
-		ADC		word_0+1
-		CLC
-		ADC		byte_F
-		ADC		#$0A
-		STA		_spr_buf,X
-		INY
-		LDA		byte_14
-		BNE		loc_9B7E
-		LDA		_1p_stage
-		CMP		#$04
-		BNE		loc_9B7E
-		LDA		(byte_8),Y
-		CMP		#$53
-		BEQ		loc_9BDA
-		CMP		#$55
-		BEQ		loc_9BDE
-		CMP		#$0E
-		BCS		loc_9B7E
-		CMP		#$03
-		BCS		loc_9BE2
-loc_9B7E:
-		LDA		(byte_8),Y
-loc_9B80:
-		STA		_spr_buf+1,X
-		INY
-		STX		byte_E
-		LDX		word_4+1
-		LDA		byte_300,X
-		LDX		byte_E
-		CMP		#$06
-		BEQ		loc_9B99
-		CMP		#$07
-		BEQ		loc_9B99
-		LDA		byte_6
-		BNE		loc_9BEF
-loc_9B99:
-		LDA		(byte_8),Y
-loc_9B9B:
-		ORA		word_0
-		STA		_spr_buf+2,X
-		INY
-		STX		byte_E
-		LDX		word_4+1
-		LDA		byte_300,X
-		LDX		byte_E
-		CMP		#$06
-		BEQ		loc_9BB6
-		CMP		#$07
-		BEQ		loc_9BB6
-		LDA		byte_6
-		BNE		loc_9BF6
-loc_9BB6:
-		LDA		(byte_8),Y
-loc_9BB8:
-		CLC
-		ADC		byte_2
-		STA		_spr_buf+3,X
-		CMP		#$10
-		BCS		loc_9BC6
-		LDA		byte_2
-		BMI		locret_9BD6
-loc_9BC6:
-		DEC		byte_10
-		BEQ		loc_9BEC
-		INY
-		TXA
-		CLC
-		ADC		#$C4
-		TAX
-		DEC		byte_3
-		BNE		loc_9BD7
-		STX		word_4
-locret_9BD6:
-		RTS
-; ---------------------------------------------------------------------------
-loc_9BD7:
-		JMP		loc_9B54
-; ---------------------------------------------------------------------------
-loc_9BDA:
-		LDA		#$F1
-		BNE		loc_9B80
-loc_9BDE:
-		LDA		#$F3
-		BNE		loc_9B80
-loc_9BE2:
-		STA		byte_16
-		LDA		#$E2
-		CLC
-		ADC		byte_16
-		JMP		loc_9B80
-; ---------------------------------------------------------------------------
-loc_9BEC:
-		PLA
-		PLA
-		RTS
-; ---------------------------------------------------------------------------
-loc_9BEF:
-		LDA		(byte_8),Y
-		EOR		#$40
-		JMP		loc_9B9B
-; ---------------------------------------------------------------------------
-loc_9BF6:
-		LDA		(byte_8),Y
-		EOR		#$FF
-		CLC
-		ADC		#$01
-		CLC
-		ADC		byte_7
-		JMP		loc_9BB8
-
-; =============== S U B	R O U T	I N E =======================================
-_sprite_manager:
-		LDA		#$40
-		STA		byte_10
-		LDA		#$00
-		STA		word_4+1
-		LDA		byte_59
-		CLC
-		ADC		#$44
-		STA		byte_59
-		STA		word_4
-loc_9C14:
-		LDX		word_4+1
-		CPX		#$10
-		BCS		loc_9C86
-		LDA		#$00
-		STA		byte_14
-		CPX		#$02
-		BCS		loc_9C26
-		LDA		#$01
-		STA		byte_14
-loc_9C26:
-		LDA		byte_310,X
-		STA		word_0
-		LDA		byte_320,X
-		STA		word_0+1
-		LDA		byte_330,X
-		STA		byte_2
-		LDA		byte_340,X
-		STA		byte_6
-		LDA		byte_300,X
-		CMP		#$3E
-		BCS		loc_9C49
-		CMP		#$3A
-		BCC		loc_9C49
-		LDA		#$01
-		STA		byte_14
-loc_9C49:
-		LDA		byte_300,X
-		CMP		#$34
-		BEQ		loc_9C54
-		CMP		#$35
-		BNE		loc_9C71
-loc_9C54:
-		LDA		_1p_stage
-		BEQ		loc_9C6E
-		CMP		#$04
-		BEQ		loc_9C65
-		LDA		byte_300,X
-		CLC
-		ADC		#$0F
-		JMP		loc_9C71
-; ---------------------------------------------------------------------------
-loc_9C65:
-		LDA		byte_300,X
-		CLC
-		ADC		#$6F
-		JMP		loc_9C71
-; ---------------------------------------------------------------------------
-loc_9C6E:
-		LDA		byte_300,X
-loc_9C71:
-		ASL
-		TAY
-		BCS		loc_9C97
-		LDA		_spr_libA,Y
-		STA		byte_8
-		LDA		_spr_libA+1,Y
-loc_9C7D:
-		STA		byte_9
-		JSR		_spr_insert
-		INC		word_4+1
-		BNE		loc_9C14
-loc_9C86:
-		LDX		word_4
-loc_9C88:
-		LDA		#$F4
-		STA		_spr_buf,X
-		TXA
-		CLC
-		ADC		#$C4
-		TAX
-		DEC		byte_10
-		BNE		loc_9C88
-		RTS
-; ---------------------------------------------------------------------------
-loc_9C97:
-		LDA		_spr_libB,Y
-		STA		byte_8
-		LDA		_spr_libB+1,Y
-		JMP		loc_9C7D
-; ---------------------------------------------------------------------------
-_spr_libA:
-		.WORD _spr00_dummy
-		.WORD _spr01
-		.WORD _spr02
-		.WORD _spr03
-		.WORD _spr02
-		.WORD _spr05
-		.WORD _spr06
-		.WORD _spr07
-		.WORD _spr02
-		.WORD _spr08
-		.WORD _spr09
-		.WORD _spr05
-		.WORD _spr0B
-		.WORD _spr0C
-		.WORD _spr0D
-		.WORD _spr0E
-		.WORD _spr0F
-		.WORD _spr10
-		.WORD _spr0F
-		.WORD _spr12
-		.WORD _spr13
-		.WORD _spr00_dummy
-		.WORD _spr15
-		.WORD _spr16
-		.WORD _spr17
-		.WORD _spr16
-		.WORD _spr19
-		.WORD _spr1A
-		.WORD _spr1B
-		.WORD _spr1C
-		.WORD _spr1D
-		.WORD _spr00_dummy
-		.WORD _spr1F
-		.WORD _spr20
-		.WORD _spr21
-		.WORD _spr20
-		.WORD _spr23
-		.WORD _spr24
-		.WORD _spr25
-		.WORD _spr26
-		.WORD _spr25
-		.WORD _spr28
-		.WORD _spr29
-		.WORD _spr2A
-		.WORD _spr2B
-		.WORD _spr2C
-		.WORD _spr2D
-		.WORD _spr2E
-		.WORD _spr2F
-		.WORD _spr30
-		.WORD _spr2F
-		.WORD _spr32
-		.WORD _spr33
-		.WORD _spr34
-		.WORD _spr35
-		.WORD _spr36
-		.WORD _spr37
-		.WORD _spr38
-		.WORD _spr01
-		.WORD _spr02
-		.WORD _spr03
-		.WORD _spr02
-		.WORD _spr3D
-		.WORD _spr3E
-		.WORD _spr3F
-		.WORD _spr3E
-		.WORD _spr3F
-		.WORD _spr33
-		.WORD _spr43
-		.WORD _spr44
-		.WORD _spr45
-		.WORD _spr46
-		.WORD _spr47
-		.WORD _spr48
-		.WORD _spr49
-		.WORD _spr4A
-		.WORD _spr4B
-		.WORD _spr4C
-		.WORD _spr4D
-		.WORD _spr4E
-		.WORD _spr4F
-		.WORD _spr50
-		.WORD _spr51
-		.WORD _spr52
-		.WORD _spr53
-		.WORD _spr54
-		.WORD _spr55
-		.WORD _spr56
-		.WORD _spr57
-		.WORD _spr58
-		.WORD _spr59
-		.WORD _spr5A
-		.WORD _spr5B
-		.WORD _spr5C
-		.WORD _spr5D
-		.WORD _spr00_dummy
-		.WORD _spr01
-		.WORD _spr02
-		.WORD _spr03
-		.WORD _spr62
-		.WORD _spr63
-		.WORD _spr64
-		.WORD _spr65
-		.WORD _spr66
-		.WORD _spr67
-		.WORD _spr68
-		.WORD _spr67
-		.WORD _spr6A
-		.WORD _spr6B
-		.WORD _spr6C
-		.WORD _spr6D
-		.WORD _spr6E
-		.WORD _spr6F
-		.WORD _spr70
-		.WORD _spr71
-		.WORD _spr72
-		.WORD _spr73
-		.WORD _spr74
-		.WORD _spr75
-		.WORD _spr76
-		.WORD _spr77
-		.WORD _spr78
-		.WORD _spr79
-		.WORD _spr7A
-		.WORD _spr7B
-		.WORD _spr7C
-		.WORD _spr7D
-		.WORD _spr7E
-_spr_libB:
-		.WORD _spr80
-		.WORD _spr81
-		.WORD _spr82
-		.WORD _spr83
-		.WORD _spr84
-		.WORD _spr85
-		.WORD _spr86
-		.WORD _spr87
-		.WORD _spr88
-		.WORD _spr89
-		.WORD _spr8A
-		.WORD _spr8B
-		.WORD _spr8C
-		.WORD _spr8B
-		.WORD _spr8E
-		.WORD _spr8F
-		.WORD _spr90
-		.WORD _spr8F
-		.WORD _spr92
-		.WORD _spr93
-		.WORD _spr94
-		.WORD _spr95
-		.WORD _spr96
-		.WORD _spr97
-		.WORD _spr98
-		.WORD _spr99
-		.WORD _spr9A
-		.WORD _spr9B
-		.WORD _spr9C
-		.WORD _spr9D
-		.WORD _spr9E
-		.WORD _spr01
-		.WORD _spr02
-		.WORD _spr03
-		.WORD _spr02
-		.WORD _sprA3
-		.WORD _sprA4
-_spr01:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$0F,$00,$00
-		.BYTE $10,$03,$00,$00
-		.BYTE $00,$11,$00,$08
-		.BYTE $10,$05,$00,$08
-_spr02:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$13,$00,$00
-		.BYTE $10,$07,$00,$00
-		.BYTE $00,$15,$00,$08
-		.BYTE $10,$09,$00,$08
-_spr03:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$17,$00,$00
-		.BYTE $10,$0B,$00,$00
-		.BYTE $00,$19,$00,$08
-		.BYTE $10,$0D,$00,$08
-_spr05:
-		.BYTE $04
-		.WORD $1008
-		.BYTE $00,$29,$00,$F8
-		.BYTE $00,$2B,$00,$00
-		.BYTE $00,$2D,$00,$08
-		.BYTE $00,$2F,$00,$10
-_spr06:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$4F,$00,$00
-		.BYTE $10,$53,$00,$00
-		.BYTE $00,$51,$00,$08
-		.BYTE $10,$55,$00,$08
-_spr07:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$51,$40,$00
-		.BYTE $10,$55,$40,$00
-		.BYTE $00,$4F,$40,$08
-		.BYTE $10,$53,$40,$08
-_spr08:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$0F,$00,$00
-		.BYTE $10,$03,$00,$00
-		.BYTE $00,$11,$00,$08
-		.BYTE $10,$05,$00,$08
-_spr09:
-		.BYTE $07
-		.WORD $0008
-		.BYTE $00,$1B,$00,$F8
-		.BYTE $10,$1F,$00,$F8
-		.BYTE $00,$1D,$00,$00
-		.BYTE $10,$21,$00,$00
-		.BYTE $00,$23,$00,$08
-		.BYTE $10,$27,$00,$08
-		.BYTE $00,$25,$00,$10
-_spr0B:
-		.BYTE $05
-		.WORD $1008
-		.BYTE $00,$31,$00,$F8
-		.BYTE $00,$33,$00,$00
-		.BYTE $00,$35,$00,$08
-		.BYTE $00,$37,$00,$10
-		.BYTE $00,$39,$00,$18
-_spr0C:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$57,$00,$00
-		.BYTE $10,$5B,$00,$00
-		.BYTE $00,$59,$00,$08
-		.BYTE $10,$5D,$00,$08
-_spr0D:
-		.BYTE $04
-		.WORD $1008
-		.BYTE $00,$29,$00,$F8
-		.BYTE $00,$5F,$00,$00
-		.BYTE $00,$61,$00,$08
-		.BYTE $00,$63,$00,$10
-_spr0E:
-		.BYTE $06
-		.WORD $0008
-		.BYTE $00,$3B,$01,$F8
-		.BYTE $00,$3F,$00,$00
-		.BYTE $10,$03,$00,$00
-		.BYTE $00,$41,$00,$08
-		.BYTE $10,$05,$00,$08
-		.BYTE $00,$3D,$01,$10
-_spr0F:
-		.BYTE $06
-		.WORD $0008
-		.BYTE $00,$3B,$01,$F8
-		.BYTE $00,$43,$00,$00
-		.BYTE $10,$07,$00,$00
-		.BYTE $00,$45,$00,$08
-		.BYTE $10,$09,$00,$08
-		.BYTE $00,$3D,$01,$10
-_spr10:
-		.BYTE $06
-		.WORD $0008
-		.BYTE $00,$3B,$01,$F8
-		.BYTE $00,$3F,$00,$00
-		.BYTE $10,$0B,$00,$00
-		.BYTE $00,$41,$00,$08
-		.BYTE $10,$0D,$00,$08
-		.BYTE $00,$3D,$01,$10
-_spr12:
-		.BYTE $04
-		.WORD $1008
-		.BYTE $00,$47,$01,$F8
-		.BYTE $00,$49,$00,$00
-		.BYTE $00,$4B,$00,$08
-		.BYTE $00,$4D,$00,$10
-_spr13:
-		.BYTE $07
-		.WORD $0008
-		.BYTE $00,$65,$01,$F8
-		.BYTE $10,$69,$00,$F8
-		.BYTE $00,$67,$00,$00
-		.BYTE $10,$6B,$00,$00
-		.BYTE $00,$6D,$00,$08
-		.BYTE $10,$71,$00,$08
-		.BYTE $00,$6F,$01,$10
-_spr15:
-		.BYTE $05
-		.WORD $0008
-		.BYTE $00,$0F,$00,$00
-		.BYTE $10,$03,$00,$00
-		.BYTE $00,$C0,$00,$08
-		.BYTE $10,$05,$00,$08
-		.BYTE $00,$C2,$00,$10
-_spr16:
-		.BYTE $05
-		.WORD $0008
-		.BYTE $00,$13,$00,$00
-		.BYTE $10,$07,$00,$00
-		.BYTE $00,$C4,$00,$08
-		.BYTE $10,$09,$00,$08
-		.BYTE $00,$C6,$00,$10
-_spr17:
-		.BYTE $05
-		.WORD $0008
-		.BYTE $00,$C8,$00,$00
-		.BYTE $10,$0B,$00,$00
-		.BYTE $00,$CA,$00,$08
-		.BYTE $10,$0D,$00,$08
-		.BYTE $00,$CC,$00,$10
-_spr19:
-		.BYTE $05
-		.WORD $1008
-		.BYTE $00,$29,$00,$F8
-		.BYTE $00,$2B,$00,$00
-		.BYTE $00,$B0,$00,$08
-		.BYTE $00,$6E,$00,$10
-		.BYTE $00,$56,$00,$18
-_spr1A:
-		.BYTE $02
-		.WORD $0808
-		.BYTE $00,$7B,$00,$F8
-		.BYTE $00,$7D,$00,$00
-_spr1B:
-		.BYTE $02
-		.WORD $0808
-		.BYTE $00,$7F,$00,$F8
-		.BYTE $00,$81,$00,$00
-_spr1C:
-		.BYTE $08
-		.WORD $0008
-		.BYTE $00,$D7,$00,$F0
-		.BYTE $10,$D9,$00,$F0
-		.BYTE $00,$DB,$00,$F8
-		.BYTE $10,$DD,$00,$F8
-		.BYTE $00,$DF,$00,$00
-		.BYTE $10,$E1,$00,$00
-		.BYTE $00,$E3,$00,$08
-		.BYTE $10,$F5,$00,$08
-_spr1D:
-		.BYTE $02
-		.WORD $0008
-		.BYTE $08,$EB,$00,$00
-		.BYTE $08,$ED,$00,$08
-_spr1F:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$8F,$00,$00
-		.BYTE $10,$03,$00,$00
-		.BYTE $00,$91,$00,$08
-		.BYTE $10,$05,$00,$08
-_spr20:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$93,$00,$00
-		.BYTE $10,$07,$00,$00
-		.BYTE $00,$95,$00,$08
-		.BYTE $10,$09,$00,$08
-_spr21:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$97,$00,$00
-		.BYTE $10,$0B,$00,$00
-		.BYTE $00,$99,$00,$08
-		.BYTE $10,$0D,$00,$08
-_spr23:
-		.BYTE $05
-		.WORD $0A08
-		.BYTE $00,$9B,$00,$00
-		.BYTE $10,$9F,$00,$00
-		.BYTE $00,$9D,$00,$08
-		.BYTE $10,$A1,$00,$08
-		.BYTE $10,$A3,$00,$10
-_spr24:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$8F,$00,$00
-		.BYTE $10,$03,$00,$00
-		.BYTE $00,$91,$00,$08
-		.BYTE $10,$05,$00,$08
-_spr25:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$93,$00,$00
-		.BYTE $10,$07,$00,$00
-		.BYTE $00,$95,$00,$08
-		.BYTE $10,$09,$00,$08
-_spr26:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$97,$00,$00
-		.BYTE $10,$0B,$00,$00
-		.BYTE $00,$99,$00,$08
-		.BYTE $10,$0D,$00,$08
-_spr28:
-		.BYTE $07
-		.WORD $0000
-		.BYTE $00,$B1,$00,$F8
-		.BYTE $10,$B5,$00,$F8
-		.BYTE $00,$B3,$00,$00
-		.BYTE $10,$B7,$00,$00
-		.BYTE $00,$B9,$00,$08
-		.BYTE $10,$BB,$00,$08
-		.BYTE $10,$BD,$00,$10
-_spr29:
-		.BYTE $02
-		.WORD $0008
-		.BYTE $08,$F7,$00,$00
-		.BYTE $08,$F9,$00,$08
-_spr2A:
-		.BYTE $01
-		.WORD $0000
-		.BYTE $00,$77,$00,$00
-_spr2B:
-		.BYTE $02
-		.WORD $2008
-		.BYTE $00,$73,$00,$00
-		.BYTE $00,$75,$00,$08
-_spr2C:
-		.BYTE $02
-		.WORD $0008
-		.BYTE $00,$7B,$00,$00
-		.BYTE $00,$7D,$00,$08
-_spr2D:
-		.BYTE $02
-		.WORD $0008
-		.BYTE $00,$7F,$00,$00
-		.BYTE $00,$81,$00,$08
-_spr2E:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$8F,$00,$00
-		.BYTE $10,$03,$00,$00
-		.BYTE $00,$91,$00,$08
-		.BYTE $10,$05,$00,$08
-_spr2F:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$93,$00,$00
-		.BYTE $10,$07,$00,$00
-		.BYTE $00,$95,$00,$08
-		.BYTE $10,$09,$00,$08
-_spr30:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$97,$00,$00
-		.BYTE $10,$0B,$00,$00
-		.BYTE $00,$99,$00,$08
-		.BYTE $10,$0D,$00,$08
-_spr32:
-		.BYTE $06
-		.WORD $0008
-		.BYTE $00,$A5,$00,$00
-		.BYTE $10,$AB,$00,$00
-		.BYTE $00,$A7,$00,$08
-		.BYTE $10,$AD,$00,$08
-		.BYTE $00,$A9,$00,$10
-		.BYTE $10,$AF,$00,$10
-_spr33:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$BF,$00,$00
-		.BYTE $10,$53,$00,$00
-		.BYTE $00,$C1,$00,$08
-		.BYTE $10,$55,$00,$08
-_spr34:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$F5,$00,$00
-		.BYTE $10,$55,$40,$00
-		.BYTE $00,$F7,$00,$08
-		.BYTE $10,$53,$40,$08
-_spr35:
-		.BYTE $01
-		.WORD $0000
-		.BYTE $00,$FD,$00,$00
-_spr36:
-		.BYTE $04
-		.WORD $1008
-		.BYTE $F8,$83,$00,$F8
-		.BYTE $F8,$85,$00,$00
-		.BYTE $F8,$87,$00,$08
-		.BYTE $F8,$89,$00,$10
-_spr37:
-		.BYTE $01
-		.WORD $0000
-		.BYTE $08,$8D,$00,$00
-_spr38:
-		.BYTE $04
-		.WORD $1008
-		.BYTE $00,$29,$00,$F8
-		.BYTE $00,$2B,$00,$00
-		.BYTE $00,$2D,$00,$08
-		.BYTE $00,$2F,$00,$10
-_spr3D:
-		.BYTE $01
-		.WORD $0000
-		.BYTE $08,$8B,$00,$00
-_spr43:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$C1,$40,$00
-		.BYTE $10,$55,$40,$00
-		.BYTE $00,$BF,$40,$08
-		.BYTE $10,$53,$40,$08
-_spr49:
-		.BYTE $12
-		.WORD $0008
-		.BYTE $D0,$C3,$02,$F0
-		.BYTE $E0,$C9,$02,$F0
-		.BYTE $D0,$C5,$02,$F8
-		.BYTE $E0,$CB,$02,$F8
-		.BYTE $F0,$CD,$02,$F8
-		.BYTE $D0,$C7,$02,$00
-		.BYTE $F0,$CF,$02,$00
-		.BYTE $00,$D1,$02,$00
-		.BYTE $10,$D5,$02,$00
-		.BYTE $D0,$C7,$42,$08
-		.BYTE $F0,$CF,$42,$08
-		.BYTE $00,$D3,$02,$08
-		.BYTE $10,$D7,$02,$08
-		.BYTE $D0,$C5,$42,$10
-		.BYTE $E0,$CB,$42,$10
-		.BYTE $F0,$CD,$42,$10
-		.BYTE $D0,$C3,$42,$18
-		.BYTE $E0,$C9,$42,$18
-_spr4A:
-		.BYTE $01
-		.WORD $0000
-		.BYTE $00,$79,$00,$00
-_spr53:
-		.BYTE $02
-		.WORD $0008
-		.BYTE $08,$F9,$00,$00
-		.BYTE $08,$FB,$00,$08
-_spr54:
-		.BYTE $02
-		.WORD $0008
-		.BYTE $08,$E4,$00,$00
-		.BYTE $08,$28,$00,$08
-_spr55:
-		.BYTE $01
-		.WORD $0000
-		.BYTE $00,$79,$00,$00
-_spr5C:
-		.BYTE $02
-		.WORD $0008
-		.BYTE $08,$F5,$00,$00
-		.BYTE $08,$F7,$00,$08
-_spr5D:
-		.BYTE $02
-		.WORD $0008
-		.BYTE $08,$E1,$00,$00
-		.BYTE $08,$E3,$00,$08
-_spr62:
-		.BYTE $06
-		.WORD $0008
-		.BYTE $00,$1B,$00,$F8
-		.BYTE $10,$21,$00,$F8
-		.BYTE $00,$1D,$00,$00
-		.BYTE $10,$23,$00,$00
-		.BYTE $00,$1F,$00,$08
-		.BYTE $10,$25,$00,$08
-_spr63:
-		.BYTE $06
-		.WORD $0008
-		.BYTE $F0,$27,$00,$00
-		.BYTE $00,$29,$00,$00
-		.BYTE $10,$2B,$00,$00
-		.BYTE $F0,$2D,$00,$08
-		.BYTE $00,$2F,$00,$08
-		.BYTE $10,$31,$00,$08
-_spr64:
-		.BYTE $06
-		.WORD $0008
-		.BYTE $F0,$33,$00,$00
-		.BYTE $00,$35,$00,$00
-		.BYTE $10,$37,$00,$00
-		.BYTE $F0,$39,$00,$08
-		.BYTE $00,$3B,$00,$08
-		.BYTE $10,$3D,$00,$08
-_spr65:
-		.BYTE $05
-		.WORD $0008
-		.BYTE $10,$43,$00,$F8
-		.BYTE $00,$3F,$00,$00
-		.BYTE $10,$45,$00,$00
-		.BYTE $00,$41,$00,$08
-		.BYTE $10,$47,$00,$08
-_spr66:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$8F,$00,$00
-		.BYTE $10,$E5,$00,$00
-		.BYTE $00,$91,$00,$08
-		.BYTE $10,$E7,$00,$08
-_spr67:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$93,$00,$00
-		.BYTE $10,$E9,$00,$00
-		.BYTE $00,$95,$00,$08
-		.BYTE $10,$EB,$00,$08
-_spr68:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$97,$00,$00
-		.BYTE $10,$ED,$00,$00
-		.BYTE $00,$99,$00,$08
-		.BYTE $10,$EF,$00,$08
-_spr6A:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$BF,$00,$00
-		.BYTE $10,$F1,$00,$00
-		.BYTE $00,$C1,$00,$08
-		.BYTE $10,$F3,$00,$08
-_spr6B:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$C1,$40,$00
-		.BYTE $10,$F3,$40,$00
-		.BYTE $00,$BF,$40,$08
-		.BYTE $10,$F1,$40,$08
-_sprA3:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$BF,$00,$00
-		.BYTE $10,$F1,$00,$00
-		.BYTE $00,$C1,$00,$08
-		.BYTE $10,$F3,$00,$08
-_sprA4:
-		.BYTE $04
-		.WORD $0008
-		.BYTE $00,$D9,$00,$00
-		.BYTE $10,$F3,$40,$00
-		.BYTE $00,$DB,$00,$08
-		.BYTE $10,$F1,$40,$08
-_spr00_dummy:
-		.BYTE $00
-_spr87:
-		.BYTE $01
-		.WORD $1000
-		.BYTE $00,$49,$00,$04
-_spr88:
-		.BYTE $01
-		.WORD $1000
-		.BYTE $00,$4B,$00,$04
-_spr89:
-		.BYTE $01
-		.WORD $1000
-		.BYTE $00,$4D,$00,$04
-
-; =============== S U B	R O U T	I N E =======================================
 _main05_game_demo:
 		JSR		_demo_input_fetch
 
@@ -4624,15 +3151,13 @@ _game01:
 
 ; =============== S U B	R O U T	I N E =======================================
 _game02:
-		LDA		_1p_stage
-		CLC
-		ADC		#$09
-		JSR		_fds_data_load
+		LDA		#$00
+		JSR		_file_lib_unpack
 		LDA		_1p_stage
 		CLC
 		ADC		#$01
-		JSR		_fds_data_load
-		LDA		#$17
+		JSR		_file_lib_unpack
+		LDA		#$0C
 		JSR		_file_lib_unpack
 		JSR		_fds_load_bufs_clear
 		INC		_game_main_sub_idx
@@ -10132,390 +8657,9 @@ _substages_macro:
 _substages_attr:
 		.BYTE $A0,$5A,$55,$AA,$59,$55,$55,$90,$55
 
-;_fds_data_pal_list:
-;		.BYTE $00,$54,$54,$54,$54,$54,$54,$00,$00,$54,$54,$54,$54,$54,$54,$00
-;		.BYTE $00,$00,$00
-;_fds_data_sides_list:
-;		.BYTE $00,$01,$01,$01,$01,$01,$00,$00,$01,$01,$01,$01,$01,$01,$00,$00
-;		.BYTE $00,$00,$01
-_integrity_test_list:
-		.BYTE $FF,$FF,$FF,$FF
-		.BYTE $0B,$0A,$FF,$FF
-		.BYTE $0C,$0D,$FF,$FF
-		.BYTE $0B,$0E,$FF,$FF
-		.BYTE $0C,$0F,$FF,$FF
-		.BYTE $0B,$10,$FF,$FF
-		.BYTE $11,$FF,$FF,$FF
-		.BYTE $12,$FF,$FF,$FF
-		.BYTE $08,$FF,$FF,$FF
-		.BYTE $02,$03,$FF,$FF
-		.BYTE $02,$04,$FF,$FF
-		.BYTE $02,$05,$FF,$FF
-		.BYTE $02,$06,$FF,$FF
-		.BYTE $02,$07,$FF,$FF
-		.BYTE $13,$FF,$FF,$FF
-		.BYTE $09,$FF,$FF,$FF
-		.BYTE $14,$FF,$FF,$FF
-		.BYTE $02,$FF,$FF,$FF
-		.BYTE $02,$16,$FF,$FF
-
-; =============== S U B	R O U T	I N E =======================================
-_fds_data_load:
-;		PHA
-;		JSR		_fds_load_bufs_clear
-		JSR		_bios_fonts_load
-;		PLA
-		STA		_fds_data_idx
-		ASL
-		ASL
-		TAX
-		LDY		#$00
-loc_D98B:
-		LDA		_integrity_test_list,X
-		STA		_fds_files_buf,Y
-		INY
-		INX
-		CPY		#$04
-		BCC		loc_D98B
-;		LDX		_main_sub_idx
-;		STX		_main_sub_idx_backup
-;		LDX		_sub_sub_idx
-;		STX		_sub_sub_idx_backup
-;		PLA
-;		CLC
-;		ADC		#$01
-;		STA		_fds_data_load_exit_pc_backup
-;		PLA
-;		ADC		#$00
-;		STA		_fds_data_load_exit_pc_backup+1
-;		LDA		#$0A
-;		STA		_main_sub_idx
-;		LDX		#$0A
-;loc_D9B7:
-;		LDA		_fds_disk_info_data,X
-;		STA		_fds_disk_info_buf,X
-;		DEX
-;		BPL		loc_D9B7
-		LDA		#$7D
-		JSR		_apu_load_safe
-;		LDA		#$55
-;		STA		_fds_status_fifo
-		JSR		_screen_clear
-
-		JSR		_file_unpack_if_needed
-
-;		LDA		#$0A
-;		STA		_ppu_mask_shadow
-;		LDA		#$4C
-;		JSR		_tlm_lib_load
-;		LDA		#$05
-;		JSR		_tlm_lib_load
-;		LDX		_fds_data_idx
-;		LDA		_fds_data_pal_list,X
-;		BEQ		loc_D9E6
-;		JSR		_tlm_lib_load
-;loc_D9E6:
-;		LDA		#$00
-;		STA		_sub_sub_idx
-;		LDX		_fds_data_idx
-;		LDA		_fds_data_sides_list,X
-;		STA		_fds_req_side
-;		LDA		_fds_req_side
-;		CMP		_fds_cur_side
-;		BEQ		loc_DA00
-;		STA		_fds_cur_side
-;		LDA		#$04
-;		STA		_sub_sub_idx
-;loc_DA00:
-;		JMP		_please_set_side_draw
-
-; =============== S U B	R O U T	I N E =======================================
-;_fds_read_status_fifo:
-;		LDA		_FDS_REG32
-;		ROR
-;		ROR		_fds_status_fifo
-;		LDA		_fds_status_fifo
-;		RTS
-
-; =============== S U B	R O U T	I N E =======================================
-;_main0A_loading_screen:
-;		JSR		_fds_read_status_fifo
-;		LDA		_sub_sub_idx
-;		JSR		_switch
-; ---------------------------------------------------------------------------
-;		.WORD _loading_screen00_loading_draw
-;		.WORD _loading_screen01_wait_for_drive
-;		.WORD _loading_screen02_load_unpack_exit
-;		.WORD _loading_screen03_error_draw
-;		.WORD _loading_screen04_wait_for_drive
-;		.WORD _loading_screen05_please_set_x
-;		.WORD _loading_screen06_wait_for_side
-
-; =============== S U B	R O U T	I N E =======================================
-;_loading_screen05_please_set_x:
-;		INC		_sub_sub_idx
-;		JMP		_please_set_side_draw
-
-; =============== S U B	R O U T	I N E =======================================
-;_loading_screen06_wait_for_side:
-;		JSR		_fds_read_status_fifo
-;		BNE		nullsub_2
-;		LDA		#$00
-;		STA		_sub_sub_idx
-;		RTS
-
-; =============== S U B	R O U T	I N E =======================================
-;_loading_screen01_wait_for_drive:
-;		JSR		_fds_read_status_fifo
-;		BNE		nullsub_2
-
-; =============== S U B	R O U T	I N E =======================================
-;_next_sub_sub_0:
-;		INC		_sub_sub_idx
-
-; =============== S U B	R O U T	I N E =======================================
-;nullsub_2:
-;		RTS
-
-; =============== S U B	R O U T	I N E =======================================
-;_loading_screen04_wait_for_drive:
-;		JSR		_fds_read_status_fifo
-;		CMP		#$FF
-;		BEQ		_next_sub_sub_0
-;		RTS
-
-; =============== S U B	R O U T	I N E =======================================
-;_loading_screen00_loading_draw:
-;		LDA		#$8B
-;		JSR		_tlm_lib_load
-;		LDA		#$4B
-;		JSR		_tlm_lib_load
-;		INC		_sub_sub_idx
-;		RTS
-
-; =============== S U B	R O U T	I N E =======================================
-;_loading_screen03_error_draw:
-;		LDA		#$8B
-;		JSR		_tlm_lib_load
-;		LDA		#$0C
-;		JSR		_tlm_lib_load
-;		LDA		_fds_error_code
-;		LSR
-;		LSR
-;		LSR
-;		LSR
-;		CLC
-;		ADC		#$01
-;		STA		byte_6E0+$1D,X
-;		LDA		_fds_error_code
-;		AND		#$0F
-;		CLC
-;		ADC		#$01
-;		STA		byte_6E0+$1E,X
-;		INC		_sub_sub_idx
-;		RTS
-
-; =============== S U B	R O U T	I N E =======================================
-;_loading_screen02_load_unpack_exit:
-;		JSR		_fds_file_load
-;		LDA		_fds_error_code
-;		BEQ		loc_DA80
-;		INC		_sub_sub_idx
-;		RTS
-; ---------------------------------------------------------------------------
-;loc_DA80:
-;		JSR		_file_crc_test
-;		BNE		_read_file_again
-;		JSR		_file_unpack_if_needed
-;		LDA		#$05
-;		STA		_nmi_counter
-;		LDX		_main_sub_idx_backup
-;		STX		_main_sub_idx
-;		LDX		_sub_sub_idx_backup
-;		STX		_sub_sub_idx
-;		JMP		(_fds_data_load_exit_pc_backup)
-; ---------------------------------------------------------------------------
-;_read_file_again:
-;		LDA		#$00
-;		STA		_sub_sub_idx
-;		RTS
-
-; =============== S U B	R O U T	I N E =======================================
-;_nmi_off_bg_render_on:
-;		LDA		#$00
-;		STA		_PPU_CTRL
-;		STA		_ppu_ctrl_shadow
-;		LDA		#$08
-;		STA		_ppu_mask_shadow
-;		STA		_PPU_MASK
-;		LDA		#$00
-;		STA		_FDS_REG22
-;		STA		_apu_DMC_FREQ
-;		LDA		#$0F
-;		STA		_apu_STATUS
-;		LDA		#$C0
-;		STA		_PAD1_REG
-;		RTS
-
-; =============== S U B	R O U T	I N E =======================================
-;_fds_file_load:
-;		JSR		_nmi_off_bg_render_on
-;		JSR		_BIOS_load_files_by_idx
-; ---------------------------------------------------------------------------
-;		.WORD _fds_disk_info_buf
-;		.WORD _fds_files_buf
-; ---------------------------------------------------------------------------
-;		STA		_fds_error_code
-;		LDA		#$C0
-;		STA		byte_100
-;		LDA		#$80
-;		STA		byte_101
-;		JMP		_render_on
-
-; =============== S U B	R O U T	I N E =======================================
-;_please_set_side_draw:
-;		LDA		#$0B
-;		JSR		_tlm_lib_load
-;		LDA		_fds_req_side
-;		CLC
-;		ADC		#$0B
-;		STA		byte_6E0+$1E,X
-;		RTS
-
-; =============== S U B	R O U T	I N E =======================================
-_add16:
-		CLC
-		ADC		word_0,X
-		STA		word_0,X
-		BCC		locret_DAF1
-		INC		word_0+1,X
-locret_DAF1:
-		RTS
-
-; =============== S U B	R O U T	I N E =======================================
-;_sub16_unref:
-;		EOR		#$FF
-;		SEC
-;		ADC		word_0,X
-;		STA		word_0,X
-;		BCS		locret_DAFD
-;		DEC		word_0+1,X
-;locret_DAFD:
-;		RTS
-
-; ---------------------------------------------------------------------------
-_lib_files_dst_lo:
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE <[_chr02_PO_COME]
-		.BYTE <[_chr03_PO1D]
-		.BYTE <[_chr04_PO2D]
-		.BYTE <[_chr05_PO3D]
-		.BYTE <[_chr06_PO4D]
-		.BYTE <[_chr07_PO5D]
-		.BYTE <[_chr08_titleA]
-		.BYTE <[_chr09_POPD_titleB]
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE <[_chr13_PO6D]
-		.BYTE <[_chr14_POED1_endingA]
-		.BYTE <[_chr15_endingB]
-		.BYTE <[_chr16_PTCD]
-		.BYTE <[_chr17_game_over]
-_lib_files_dst_hi:
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE <[_chr02_PO_COME]
-		.BYTE <[_chr03_PO1D]
-		.BYTE <[_chr04_PO2D]
-		.BYTE <[_chr05_PO3D]
-		.BYTE <[_chr06_PO4D]
-		.BYTE <[_chr07_PO5D]
-		.BYTE <[_chr08_titleA]
-		.BYTE <[_chr09_POPD_titleB]
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE <[_chr13_PO6D]
-		.BYTE <[_chr14_POED1_endingA]
-		.BYTE <[_chr15_endingB]
-		.BYTE <[_chr16_PTCD]
-		.BYTE <[_chr17_game_over]
-_lib_files_bank:
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE _chr02_PO_COME_BANK
-		.BYTE _chr03_PO1D_BANK
-		.BYTE _chr04_PO2D_BANK
-		.BYTE _chr05_PO3D_BANK
-		.BYTE _chr06_PO4D_BANK
-		.BYTE _chr07_PO5D_BANK
-		.BYTE _chr08_titleA_BANK
-		.BYTE _chr09_POPD_titleB_BANK
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE $FF
-		.BYTE _chr13_PO6D_BANK
-		.BYTE _chr14_POED1_endingA_BANK
-		.BYTE _chr15_endingB_BANK
-		.BYTE _chr16_PTCD_BANK
-		.BYTE _chr17_game_over_BANK
-
-; =============== S U B	R O U T	I N E =======================================
-_file_unpack_if_needed:
-		LDX		#$00
-		STX		byte_10
-loc_DB32:
-		LDX		byte_10
-		LDA		_fds_files_buf,X
-		CMP		#$FF
-		BEQ		loc_DB58
-		CMP		#$15
-		BEQ		loc_DB58
-		CMP		#$08
-		BEQ		loc_DB58
-		CMP		#$09
-		BEQ		loc_DB58
-;		ASL
-		TAX
-		LDA		_lib_files_dst_lo,X
-		CMP		#$FF
-		BEQ		loc_DB53
-		JSR		_file_lib_unpack_ex
-loc_DB53:
-		INC		byte_10
-		JMP		loc_DB32
-; ---------------------------------------------------------------------------
-loc_DB58:
-		JMP		_render_on_nmi_on
-
 ; =============== S U B	R O U T	I N E =======================================
 _file_lib_unpack:
-;		ASL
 		TAX
-
-; =============== S U B	R O U T	I N E =======================================
-_file_lib_unpack_ex:
-
 		LDA		_lib_files_dst_lo,X
 		STA		word_0
 		LDA		_lib_files_dst_hi,X
@@ -10563,7 +8707,6 @@ loc_DBAD:
 loc_DBB2:
 		JSR		_add16
 		JMP		loc_DB8C
-; ---------------------------------------------------------------------------
 loc_DBB8:
 		LDY		#$01
 		STA		byte_2
@@ -10579,152 +8722,59 @@ loc_DBCA:
 		LDA		#$01
 		JSR		_add16
 		JMP		loc_DB67
-; ---------------------------------------------------------------------------
 loc_DBD2:
 		JMP		_render_on_nmi_on
 
 ; =============== S U B	R O U T	I N E =======================================
-;_file_crc_test:
-;		LDY		#$00
-;		STY		byte_8
-;loc_DBD9:
-;		LDX		byte_8
-;		LDA		_fds_files_buf,X
-;		CMP		#$16
-;		BCS		loc_DBF0
-;		CMP		#$FF
-;		BEQ		loc_DBF0
-;		JSR		_integrity_test
-;		BNE		locret_DBEF
-;		INC		byte_8
-;		BNE		loc_DBD9
-;locret_DBEF:
-;		RTS; ---------------------------------------------------------------------------
-;loc_DBF0:
-;		LDA		#$00
-;		RTS
+_add16:
+		CLC
+		ADC		word_0,X
+		STA		word_0,X
+		BCC		locret_DAF1
+		INC		word_0+1,X
+locret_DAF1:
+		RTS
+; ---------------------------------------------------------------------------
+_lib_files_dst_lo:
+		.BYTE <[_chr02_PO_COME]			; 0
+		.BYTE <[_chr03_PO1D]			; 1
+		.BYTE <[_chr04_PO2D]			; 2
+		.BYTE <[_chr05_PO3D]			; 3
+		.BYTE <[_chr06_PO4D]			; 4
+		.BYTE <[_chr07_PO5D]			; 5
+		.BYTE <[_chr13_PO6D]			; 6
+		.BYTE <[_chr09_POPD_titleB]		; 7
+		.BYTE <[_chr08_titleA]			; 8
+		.BYTE <[_chr14_POED1_endingA]	; 9
+		.BYTE <[_chr15_endingB]			; A
+		.BYTE <[_chr16_PTCD]			; B
+		.BYTE <[_chr17_game_over]		; C
+_lib_files_dst_hi:
+		.BYTE <[_chr02_PO_COME]
+		.BYTE <[_chr03_PO1D]
+		.BYTE <[_chr04_PO2D]
+		.BYTE <[_chr05_PO3D]
+		.BYTE <[_chr06_PO4D]
+		.BYTE <[_chr07_PO5D]
+		.BYTE <[_chr09_POPD_titleB]
+		.BYTE <[_chr08_titleA]
+		.BYTE <[_chr14_POED1_endingA]
+		.BYTE <[_chr15_endingB]
+		.BYTE <[_chr16_PTCD]
+		.BYTE <[_chr17_game_over]
+_lib_files_bank:
+		.BYTE _chr02_PO_COME_BANK
+		.BYTE _chr03_PO1D_BANK
+		.BYTE _chr04_PO2D_BANK
+		.BYTE _chr05_PO3D_BANK
+		.BYTE _chr06_PO4D_BANK
+		.BYTE _chr07_PO5D_BANK
+		.BYTE _chr13_PO6D_BANK
+		.BYTE _chr09_POPD_titleB_BANK
+		.BYTE _chr08_titleA_BANK
+		.BYTE _chr14_POED1_endingA_BANK
+		.BYTE _chr15_endingB_BANK
+		.BYTE _chr16_PTCD_BANK
+		.BYTE _chr17_game_over_BANK
 
 ; =============== S U B	R O U T	I N E =======================================
-;_integrity_test:
-;		ASL
-;		STA		word_0
-;		ASL
-;		TAX
-;		LDA		_intergity_ofs_list,X
-;		STA		word_4
-;		LDA		_intergity_ofs_list+1,X
-;		STA		word_4+1
-;		LDA		_intergity_size_list,X
-;		STA		byte_2
-;		LDA		_intergity_size_list+1,X
-;		STA		byte_3
-;		LDY		#$00
-;		STY		byte_6
-;		STY		byte_7
-;loc_DC12:
-;		LDA		byte_2
-;		SEC
-;		SBC		#$01
-;		STA		byte_2
-;		LDA		byte_3
-;		SBC		#$00
-;		STA		byte_3
-;		BCC		loc_DC32
-;		LDA		(word_4),Y
-;		LDX		#byte_6
-;		JSR		_add16
-;		LDX		#word_4
-;		LDA		#$01
-;		JSR		_add16
-;		JMP		loc_DC12
-; ---------------------------------------------------------------------------
-;loc_DC32:
-;		LDX		word_0
-;		LDA		byte_6
-;		CMP		_intergity_crc_list,X
-;		BNE		locret_DC40
-;		LDA		byte_7
-;		CMP		_intergity_crc_list+1,X
-;locret_DC40:
-;		RTS
-; ---------------------------------------------------------------------------
-;_intergity_ofs_list:
-;		.WORD $FFFF
-;_intergity_size_list:
-;		.WORD $FFFF
-;		.WORD _FDS_RESET
-;		.WORD $5F80
-;		.WORD _chr02_PO_COME
-;		.WORD $06B7
-;		.WORD _chr03_PO1D
-;		.WORD $1013
-;		.WORD _chr04_PO2D
-;		.WORD $1037
-;		.WORD _chr05_PO3D
-;		.WORD $0E70
-;		.WORD _chr06_PO4D
-;		.WORD $1080
-;		.WORD _chr07_PO5D
-;		.WORD $1024
-;		.WORD _screen_lib2_title
-;		.WORD $1853
-;		.WORD _chr09_POPD_titleB
-;		.WORD $07E2
-;		.WORD _stage1_rooms
-;		.WORD $08A4
-;		.WORD byte_16000
-;		.WORD $069D
-;		.WORD _apu32
-;		.WORD $05BC
-;		.WORD _stage2_rooms
-;		.WORD $0D6D
-;		.WORD _apu44
-;		.WORD $0EA1
-;		.WORD _stage4_rooms
-;		.WORD $115B
-;		.WORD _stage5_rooms
-;		.WORD $0FE9
-;		.WORD byte_4B000
-;		.WORD $1576
-;		.WORD _screen_lib8_final_stage_complete
-;		.WORD $1D79
-;		.WORD _chr13_PO6D
-;		.WORD $1734
-;		.WORD _chr14_POED1_endingA
-;		.WORD $16A1
-;		.WORD $0000
-;		.WORD $0001
-;		.WORD _chr16_PTCD
-;		.WORD $0A54
-;_intergity_crc_list:
-;		.WORD $965C
-;		.WORD $69A3
-;		.WORD $7A15
-;		.WORD $CD53
-;		.WORD $0B9C
-;		.WORD $9AB8
-;		.WORD $7D79
-;		.WORD $806B
-;		.WORD $B0AF
-;		.WORD $AAA4
-;		.WORD $8DC9
-;		.WORD $AFB2
-;		.WORD $1945
-;		.WORD $4C4E
-;		.WORD $A8C2
-;		.WORD $38B4
-;		.WORD $581F
-;		.WORD $C92E
-;		.WORD $0367
-;		.WORD $AA03
-;		.WORD $C3F4
-;		.WORD $FFFF
-;		.WORD $BC10
-
-;_fds_disk_info_data:
-;		.BYTE $A4
-;		.BYTE "GRN "
-;		.BYTE $00,$00,$00,$00,$00
-;		.BYTE $A4
-;		.BYTE "GRN "
-;		.BYTE $00,$01,$00,$00,$00
