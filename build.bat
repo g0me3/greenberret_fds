@@ -4,12 +4,18 @@ cd nas
 
 echo assemble...
 
-rem to generate lst and err filrs
-dasm bank0.nas -f3 -l!bank0.lst -obank0.bin >> !err.log
 rem to draw dasm output
-dasm bank1.nas -f3 -obank1.bin
+dasm bank0.nas -f3 -obank0.bin
+rem to generate lst and err filrs
+dasm bank1.nas -f3 -l!bank1.lst -obank1.bin >> !err.log
 
-for %%f in (*.nas) do call :dodasm %%f > NUL
+call :dodasm bank2.nas > NUL
+call :dodasm bank3.nas > NUL
+call :dodasm bank4.nas > NUL
+call :dodasm bank5.nas > NUL
+call :dodasm bank6.nas > NUL
+call :dodasm bank7.nas > NUL
+call :dodasm hdr.nas > NUL
 
 goto :build
 

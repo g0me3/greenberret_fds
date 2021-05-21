@@ -86,7 +86,7 @@ byte_2D:
 		.BYTE 0
 byte_2E:
 		.BYTE 0
-_fds_cur_side:
+_cur_side:
 		.BYTE 0
 byte_30:
 		.BYTE 0
@@ -453,7 +453,6 @@ byte_350:
 		.BYTE 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 		.BYTE 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 		.BYTE 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-_bios_font_buf:
 		.BYTE 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 		.BYTE 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 		.BYTE 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
@@ -496,25 +495,25 @@ _main_sub_idx_backup:
 		.BYTE 0
 _sub_sub_idx_backup:
 		.BYTE 0
-_fds_data_idx:
+_data_idx:
 		.BYTE 0
 		.BYTE 0
-_fds_data_load_exit_pc_backup:
+_data_load_exit_pc_backup:
 		.BYTE 0,0
-_fds_error_code:
+_error_code:
 		.BYTE 0
 		.BYTE 0
-_fds_files_buf:
+_files_buf:
 		.BYTE 0,0,0,0
 		.BYTE 0
 		.BYTE 0
 		.BYTE 0
 		.BYTE 0
-_fds_disk_info_buf:
+_disk_info_buf:
 		.BYTE 0,0,0,0,0,0
-_fds_req_side:
+_req_side:
 		.BYTE 0,0,0,0,0,0,0,0,0,0,0
-_fds_status_fifo:
+_status_fifo:
 		.BYTE 0
 		.BYTE 0,0,0,0
 		.BYTE 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

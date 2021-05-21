@@ -19,6 +19,11 @@
 		SECTION_END "STAGE 3 data (FC_3)"
 
 		SECTION_START
+		FAR_PTR _stage4_data
+		INCLUDE "..\FC_4.inc"
+		SECTION_END "STAGE 4 data (FC_4)"
+
+		SECTION_START
 		FAR_PTR _stage5_data
 		INCLUDE "..\FC_5.inc"
 		SECTION_END "STAGE 5 data (FC_5)"

@@ -16,8 +16,6 @@ _apu_tracks_lib_ofs:
 ; =============== S U B	R O U T	I N E =======================================
 _apu_load:
 		STA		_track_chnl_var_ofs
-;		LDA		#$7D
-;		CMP		_track_chnl_var_ofs
 		CMP		#$7D
 		BEQ		loc_CA33
 		LDA		byte_20
@@ -1220,7 +1218,6 @@ _apu_track_lib:
 		.BYTE $08
 		.WORD _apu2B
 		.BYTE $80
-off_D121:
 		.WORD _apu2C
 		.BYTE $04
 		.WORD _apu2D
