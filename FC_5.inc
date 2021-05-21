@@ -1,4 +1,4 @@
-		ORG $669D
+
 _stage5_rooms:
 		.WORD byte_436A5
 		.WORD byte_437A5

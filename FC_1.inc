@@ -1,4 +1,4 @@
-		ORG $669D
+
 _stage1_rooms:
 		.WORD _stage1_room0
 		.WORD _stage1_room1

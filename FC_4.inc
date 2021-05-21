@@ -1,4 +1,4 @@
-		ORG $65BC
+
 _stage4_rooms:
 		.WORD byte_3B5C2
 		.WORD byte_3B6C2
@@ -494,143 +494,6 @@ _stage4_dataA:
 		.BYTE $60,$00
 		.BYTE $20,$81
 		.BYTE $FF
-
-; =============== S U B	R O U T	I N E =======================================
-sub_3BFAF:
-		LDA		_frames_counter
-		AND		#$03
-		BNE		loc_3BFBA
-		LDA		#$04
-		JSR		_apu_load_safe
-loc_3BFBA:
-		LDA		byte_55D,Y
-		SEC
-		SBC		#$01
-		STA		byte_55D,Y
-		BNE		loc_3BFD2
-		LDA		#$40
-		STA		byte_55D,Y
-		LDA		#$09
-		JSR		_apu_load_safe
-		JSR		sub_C523
-loc_3BFD2:
-		LDA		byte_547,Y
-		BPL		loc_3BFE0
-		LDA		byte_543,Y
-		CMP		#$10
-		BCC		loc_3BFEA
-		BCS		loc_3BFE7
-loc_3BFE0:
-		LDA		byte_543,Y
-		CMP		#$E0
-		BCS		loc_3BFEE
-loc_3BFE7:
-		JMP		sub_BFEA
-; ---------------------------------------------------------------------------
-loc_3BFEA:
-		LDA		#$01
-		BNE		loc_3BFF0
-loc_3BFEE:
-		LDA		#$FF
-loc_3BFF0:
-		STA		byte_55A,Y
-		LDA		#$18
-		STA		byte_541,Y
-		STA		byte_55E,Y
-		JSR		sub_C2BB
-		LDA		byte_55C,Y
-		BNE		loc_3C00F
-		LDA		#$48
-loc_3C005:
-		STA		byte_54A,Y
-		LDA		#$01
-		STA		byte_55B,Y
-		BNE		loc_3BFE7
-loc_3C00F:
-		LDA		#$FF
-loc_3C011:
-		STA		byte_549,Y
-		LDA		#$B4
-		BNE		loc_3C005
-
-; =============== S U B	R O U T	I N E =======================================
-sub_3C018:
-		LDA		_frames_counter
-		AND		#$03
-		BNE		loc_3C023
-		LDA		#$04
-		JSR		_apu_load_safe
-loc_3C023:
-		LDX		byte_545,Y
-		LDA		byte_55C,Y
-		BEQ		loc_3C036
-		CPX		#$58
-		BCS		loc_3C042
-		JSR		sub_C2BB
-		LDA		#$00
-		BEQ		loc_3C03F
-loc_3C036:
-		CPX		#$A0
-		BCC		loc_3C042
-		JSR		sub_C2BB
-		LDA		#$01
-loc_3C03F:
-		STA		byte_55C,Y
-loc_3C042:
-		LDA		#$01
-		CLC
-		ADC		byte_55B,Y
-		STA		byte_55B,Y
-		CMP		#$10
-		BEQ		loc_3C05A
-		CMP		#$30
-		BEQ		loc_3C060
-		CMP		#$50
-		BEQ		loc_3C06F
-loc_3C057:
-		JMP		sub_BFEA
-; ---------------------------------------------------------------------------
-loc_3C05A:
-		JSR		sub_C2CA
-		JMP		loc_3C057
-; ---------------------------------------------------------------------------
-loc_3C060:
-		LDA		#$00
-		LDX		byte_54B,Y
-		BNE		loc_3C069
-		LDA		#$01
-loc_3C069:
-		STA		byte_54B,Y
-		JMP		loc_3C057
-; ---------------------------------------------------------------------------
-loc_3C06F:
-		LDA		#$17
-		STA		byte_541,Y
-		STA		byte_55E,Y
-		JSR		sub_C2CA
-		JSR		sub_C2BB
-		LDA		byte_55A,Y
-		STA		byte_547,Y
-		JMP		loc_3C057
-
-; =============== S U B	R O U T	I N E =======================================
-sub_3C086:
-		JSR		sub_C240
-		LDA		#$80
-		STA		byte_559,Y
-		LDA		#$40
-		JSR		sub_C24C
-		LDA		#$00
-		STA		byte_54E,Y
-		STA		byte_55B,Y
-		STA		byte_55C,Y
-		STA		byte_549
-		STA		byte_54A
-		LDA		#$38
-		STA		byte_55D,Y
-		LDA		#$17
-		JMP		sub_C4F9
-; ---------------------------------------------------------------------------
 _stage4_objs:
 		.WORD _stage4_obj00
 		.WORD _stage4_obj01
@@ -881,6 +744,143 @@ _substage4_obj0C:
 		.BYTE $80,$5E,$07
 _substage4_obj0D:
 		.BYTE $FF
+
+; =============== S U B	R O U T	I N E =======================================
+sub_3BFAF:
+		LDA		_frames_counter
+		AND		#$03
+		BNE		loc_3BFBA
+		LDA		#$04
+		JSR		_apu_load_safe
+loc_3BFBA:
+		LDA		byte_55D,Y
+		SEC
+		SBC		#$01
+		STA		byte_55D,Y
+		BNE		loc_3BFD2
+		LDA		#$40
+		STA		byte_55D,Y
+		LDA		#$09
+		JSR		_apu_load_safe
+		JSR		sub_C523
+loc_3BFD2:
+		LDA		byte_547,Y
+		BPL		loc_3BFE0
+		LDA		byte_543,Y
+		CMP		#$10
+		BCC		loc_3BFEA
+		BCS		loc_3BFE7
+loc_3BFE0:
+		LDA		byte_543,Y
+		CMP		#$E0
+		BCS		loc_3BFEE
+loc_3BFE7:
+		JMP		sub_BFEA
+; ---------------------------------------------------------------------------
+loc_3BFEA:
+		LDA		#$01
+		BNE		loc_3BFF0
+loc_3BFEE:
+		LDA		#$FF
+loc_3BFF0:
+		STA		byte_55A,Y
+		LDA		#$18
+		STA		byte_541,Y
+		STA		byte_55E,Y
+		JSR		sub_C2BB
+		LDA		byte_55C,Y
+		BNE		loc_3C00F
+		LDA		#$48
+loc_3C005:
+		STA		byte_54A,Y
+		LDA		#$01
+		STA		byte_55B,Y
+		BNE		loc_3BFE7
+loc_3C00F:
+		LDA		#$FF
+loc_3C011:
+		STA		byte_549,Y
+		LDA		#$B4
+		BNE		loc_3C005
+
+; =============== S U B	R O U T	I N E =======================================
+sub_3C018:
+		LDA		_frames_counter
+		AND		#$03
+		BNE		loc_3C023
+		LDA		#$04
+		JSR		_apu_load_safe
+loc_3C023:
+		LDX		byte_545,Y
+		LDA		byte_55C,Y
+		BEQ		loc_3C036
+		CPX		#$58
+		BCS		loc_3C042
+		JSR		sub_C2BB
+		LDA		#$00
+		BEQ		loc_3C03F
+loc_3C036:
+		CPX		#$A0
+		BCC		loc_3C042
+		JSR		sub_C2BB
+		LDA		#$01
+loc_3C03F:
+		STA		byte_55C,Y
+loc_3C042:
+		LDA		#$01
+		CLC
+		ADC		byte_55B,Y
+		STA		byte_55B,Y
+		CMP		#$10
+		BEQ		loc_3C05A
+		CMP		#$30
+		BEQ		loc_3C060
+		CMP		#$50
+		BEQ		loc_3C06F
+loc_3C057:
+		JMP		sub_BFEA
+; ---------------------------------------------------------------------------
+loc_3C05A:
+		JSR		sub_C2CA
+		JMP		loc_3C057
+; ---------------------------------------------------------------------------
+loc_3C060:
+		LDA		#$00
+		LDX		byte_54B,Y
+		BNE		loc_3C069
+		LDA		#$01
+loc_3C069:
+		STA		byte_54B,Y
+		JMP		loc_3C057
+; ---------------------------------------------------------------------------
+loc_3C06F:
+		LDA		#$17
+		STA		byte_541,Y
+		STA		byte_55E,Y
+		JSR		sub_C2CA
+		JSR		sub_C2BB
+		LDA		byte_55A,Y
+		STA		byte_547,Y
+		JMP		loc_3C057
+
+; =============== S U B	R O U T	I N E =======================================
+sub_3C086:
+		JSR		sub_C240
+		LDA		#$80
+		STA		byte_559,Y
+		LDA		#$40
+		JSR		sub_C24C
+		LDA		#$00
+		STA		byte_54E,Y
+		STA		byte_55B,Y
+		STA		byte_55C,Y
+		STA		byte_549
+		STA		byte_54A
+		LDA		#$38
+		STA		byte_55D,Y
+		LDA		#$17
+		JMP		sub_C4F9
+; ---------------------------------------------------------------------------
 _spr4B:
 		.BYTE $0B
 		.WORD $0008

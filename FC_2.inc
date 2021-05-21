@@ -1,4 +1,4 @@
-		ORG $65BC
+
 _stage2_rooms:
 		.WORD _stage2_room0
 		.WORD _stage2_room1

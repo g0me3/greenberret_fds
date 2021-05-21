@@ -3,14 +3,11 @@
 
 		BANK_START $07
 
-		SECTION_START
-;		INCLUDE "..\"
-		SECTION_END ""
+;		INCBIN "..\copyrights.txt"
 
-		INCBIN "..\copyrights.txt"
-NMI:
-IRQ:
-RESET:
-		RTI
+		SECTION_START
+		INCLUDE "..\FC_MAIN.inc"
+		SECTION_END "FC_MAIN"
+
 
 		LAST_BANK_END 7,$10000

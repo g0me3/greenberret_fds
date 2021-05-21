@@ -163,6 +163,10 @@ CUR_SEC_START	SET $FFFFFFFF
 #endif
 	ENDM
 
+	MAC	FAR_PTR
+{1}			SET .
+{1}_BANK	SET CUR_PRG_BANK
+	ENDM
 ;---------------A-R-I-T-H-M---------------------
 
 	; \t\tLDA\t\t(.*)\n\t\tSTA\t\t(.*)\n\t\tLDA\t\t\1\+1\n\t\tSTA\t\t\2\+1\n
