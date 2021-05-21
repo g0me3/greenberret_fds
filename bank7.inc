@@ -1,0 +1,16 @@
+
+		ORG $C000
+
+		BANK_START $07
+
+		SECTION_START
+;		INCLUDE "..\"
+		SECTION_END ""
+
+		INCBIN "..\copyrights.txt"
+NMI:
+IRQ:
+RESET:
+		RTI
+
+		LAST_BANK_END 7,$10000

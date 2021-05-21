@@ -1,0 +1,11 @@
+
+		ORG $8000
+
+		BANK_START $01
+
+		SECTION_START
+;		INCLUDE "..\"
+		.BYTE		$FF
+		SECTION_END ""
+
+		BANK_END 1,$C000

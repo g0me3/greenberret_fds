@@ -1,0 +1,12 @@
+
+		ORG $8000
+
+		BANK_START $06
+
+		SECTION_START
+;_chr00:
+;		INCBIN "..\CHR\.chr"
+		.BYTE		$FF
+		SECTION_END ""
+
+		BANK_END 6,$C000
