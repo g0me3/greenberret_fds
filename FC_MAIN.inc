@@ -3,13 +3,10 @@
 RESET:
 		CLI
 		CLD
-		LDA		#$00
-		STA		_main_sub_idx
-		STA		byte_103
 		LDX		#$FF
 		TXS
 		LDA		#$C0
-		STA		byte_100
+		STA		_PAD1_REG
 		JSR		_nmi_off_render_off
 		LDX		#$F0
 		LDA		#$00
@@ -25,11 +22,15 @@ loc_80AB:
 		STA		$0700,X
 		DEX
 		BNE		loc_80AB
+		LDA		#$00
+		STA		_main_sub_idx
 		LDA		#$50
 		STA		_hi_scores+1
 		LDA		#$00
 		STA		_ppu_queue_buf
 		JSR		_render_on
+		LDA		#$06
+		JSR		_unrom_prg
 		LDA		#$7D
 		JSR		_apu_load_safe
 _MAIN_IDLE_LOOP:
@@ -97,8 +98,6 @@ IRQ:
 _render_on:
 		LDA		#$0F
 		STA		_apu_STATUS
-		LDA		#$C0
-		STA		_PAD1_REG
 
 ; =============== S U B	R O U T	I N E =======================================
 _render_on_nmi_on:
@@ -359,19 +358,31 @@ _apu_play_safe:
 		LDA		_busy_flags
 		AND		#$02
 		BNE		locret_8224
-		JMP		_apu_play
+		LDA		_cur_prg_bank
+		PHA
+		LDA		#$01
+		JSR		_unrom_prg
+		JSR		_apu_play
+		PLA
+		JMP		_unrom_prg
 ; ---------------------------------------------------------------------------
 locret_8224:
 		RTS
 
 ; =============== S U B	R O U T	I N E =======================================
 _apu_load_safe:
-		PHA
+		STA		_cur_apu_idx
 		LDA		_busy_flags
 		ORA		#$02
 		STA		_busy_flags
-		PLA
+		LDA		_cur_prg_bank
+		PHA
+		LDA		#$00
+		JSR		_unrom_prg
+		LDA		_cur_apu_idx
 		JSR		_apu_load
+		PLA
+		JSR		_unrom_prg
 		LDA		#$01
 		AND		_busy_flags
 		STA		_busy_flags
@@ -423,6 +434,9 @@ loc_EBA3:
 		LDA		(word_0),Y
 		STA		_PPU_DATA
 		INY
+		BNE		loc_EBA4
+		INC		word_0+1
+loc_EBA4:
 		DEX
 		BNE		loc_EBA3
 		LDA		#$00
@@ -434,7 +448,7 @@ loc_EB7C:
 		DEC		byte_2
 		BNE		_unp_half_inv_mode
 		JMP		_render_on
-;
+
 _BIOS_chr_fonts_data:
 		.BYTE $00,$00,$00,$00,$00,$00,$00,$00
 		.BYTE $38,$4C,$C6,$C6,$C6,$64,$38,$00
@@ -484,6 +498,7 @@ _main00_title_init:
 		JSR		_file_lib_unpack
 		LDA		#$0B
 		JSR		_file_lib_unpack
+		JSR		_bios_fonts_load
 		JSR		_title_screen_draw
 		LDA		#$04
 		STA		_delay_counter+1
@@ -580,6 +595,7 @@ _main04_intro_cutscene:
 
 ; =============== S U B	R O U T	I N E =======================================
 _intro_cutscene_sub0:
+		JSR		_bios_fonts_load
 		LDA		#$08
 		JSR		_file_lib_unpack
 		JSR		_screen_clear
@@ -2673,7 +2689,7 @@ _title_screen_draw:
 		STA		_ppu_queue_pos
 		LDA		#$06
 		JSR		_tlm_lib_load
-		JSR		_nmi_off_render_off
+;		JSR		_nmi_off_render_off
 		LDA		#$03
 		STA		byte_8
 loc_91D7:
@@ -2735,10 +2751,14 @@ _screen_lib_load:
 		LDA		#$00
 		STA		_PPU_CTRL
 		STA		_PPU_MASK
-		LDA		_screen_libs,X
+		LDA		_screen_lib,X
 		STA		byte_3
-		LDA		_screen_libs+1,X
+		LDA		_screen_lib+1,X
 		STA		word_4
+		LDA		_cur_prg_bank
+		PHA
+		LDA		#_screen_libs_BANK
+		JSR		_unrom_prg
 		LDA		#$00
 		STA		_ppu_queue_pos
 		STA		byte_FC
@@ -2765,6 +2785,8 @@ loc_925E:
 		JMP		loc_925E
 ; ---------------------------------------------------------------------------
 loc_9276:
+		PLA
+		JSR		_unrom_prg
 		JMP		_render_on_nmi_on
 
 ; =============== S U B	R O U T	I N E =======================================
@@ -2815,7 +2837,7 @@ loc_92AE:
 		STA		_PPU_ADDR
 		JMP		loc_9297
 ; ---------------------------------------------------------------------------
-_screen_libs:
+_screen_lib:
 		.WORD _screen_lib0_blank
 		.WORD _screen_lib2_title
 		.WORD _screen_lib4_regular_stage_complete
@@ -8664,6 +8686,10 @@ _file_lib_unpack:
 		STA		word_0
 		LDA		_lib_files_dst_hi,X
 		STA		word_0+1
+		LDA		_cur_prg_bank
+		PHA
+		LDA		_lib_files_bank,X
+		JSR		_unrom_prg
 loc_DB67:
 		LDA		#$00
 		STA		_PPU_MASK
@@ -8723,6 +8749,8 @@ loc_DBCA:
 		JSR		_add16
 		JMP		loc_DB67
 loc_DBD2:
+		PLA
+		JSR		_unrom_prg
 		JMP		_render_on_nmi_on
 
 ; =============== S U B	R O U T	I N E =======================================
@@ -8750,18 +8778,19 @@ _lib_files_dst_lo:
 		.BYTE <[_chr16_PTCD]			; B
 		.BYTE <[_chr17_game_over]		; C
 _lib_files_dst_hi:
-		.BYTE <[_chr02_PO_COME]
-		.BYTE <[_chr03_PO1D]
-		.BYTE <[_chr04_PO2D]
-		.BYTE <[_chr05_PO3D]
-		.BYTE <[_chr06_PO4D]
-		.BYTE <[_chr07_PO5D]
-		.BYTE <[_chr09_POPD_titleB]
-		.BYTE <[_chr08_titleA]
-		.BYTE <[_chr14_POED1_endingA]
-		.BYTE <[_chr15_endingB]
-		.BYTE <[_chr16_PTCD]
-		.BYTE <[_chr17_game_over]
+		.BYTE >[_chr02_PO_COME]
+		.BYTE >[_chr03_PO1D]
+		.BYTE >[_chr04_PO2D]
+		.BYTE >[_chr05_PO3D]
+		.BYTE >[_chr06_PO4D]
+		.BYTE >[_chr07_PO5D]
+		.BYTE >[_chr13_PO6D]
+		.BYTE >[_chr09_POPD_titleB]
+		.BYTE >[_chr08_titleA]
+		.BYTE >[_chr14_POED1_endingA]
+		.BYTE >[_chr15_endingB]
+		.BYTE >[_chr16_PTCD]
+		.BYTE >[_chr17_game_over]
 _lib_files_bank:
 		.BYTE _chr02_PO_COME_BANK
 		.BYTE _chr03_PO1D_BANK
@@ -8778,3 +8807,10 @@ _lib_files_bank:
 		.BYTE _chr17_game_over_BANK
 
 ; =============== S U B	R O U T	I N E =======================================
+_unrom_prg:
+		STA		_cur_prg_bank
+		TAY
+		STA		_unrom_cmd,Y
+		RTS
+_unrom_cmd:
+		.BYTE	$00,$01,$02,$03,$04,$05,$06,$07

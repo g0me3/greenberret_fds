@@ -381,9 +381,9 @@ _ppu_ctrl_shadow:
 
 		ORG $0100
 
-byte_100:
+_cur_prg_bank:
 		.BYTE 0
-byte_101:
+_cur_apu_idx:
 		.BYTE 0
 byte_102:
 		.BYTE 0
