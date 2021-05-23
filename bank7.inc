@@ -3,7 +3,7 @@
 
 		BANK_START $07
 
-		INCBIN "..\copyrights.txt"
+		INCBIN "../copyrights.txt"
 
 		SECTION_START
 
