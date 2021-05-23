@@ -141,10 +141,10 @@ loc_8162:
 		LDA		#$E8
 		STA		_PPU_SCROLL
 		LDA		_PPU_STATUS
-		LDX		#$31+4
+		LDX		#$31+6
 		LDA		_busy_flags
 		BNE		loc_8188
-		LDX		#$29+4
+		LDX		#$29+6
 loc_8188:
 		PHA
 		LDA		#$16
@@ -426,90 +426,90 @@ loc_8243:
 		.WORD _main09_ending
 
 ; =============== S U B	R O U T	I N E =======================================
-_fonts_load:
-		JSR		_nmi_off_render_off
-		LDA		#<[_chr_fonts_data]
-		STA		word_0
-		LDA		#>[_chr_fonts_data]
-		STA		word_0+1
-		LDX		#[[_chr_fonts_data_end-_chr_fonts_data]>>3]
-		STX		byte_2
-		LDA		_PPU_STATUS
-		LDA		_ppu_ctrl_shadow
-		AND		#$FB
-		STA		_ppu_ctrl_shadow
-		STA		_PPU_CTRL
-		LDA		#$00
-		STA		_PPU_ADDR
-		STA		_PPU_ADDR
-_unp_half_inv_mode:
-		JSR		_font_char_load
-		JSR		_font_char_load
-		LDA		word_0
-		CLC
-		ADC		#$08
-		STA		word_0
-		BCC		.1
-		INC		word_0+1
-.1:
-		DEC		byte_2
-		BNE		_unp_half_inv_mode
-		JMP		_render_on
+;_fonts_load:
+;		JSR		_nmi_off_render_off
+;		LDA		#<[_chr_fonts_data]
+;		STA		word_0
+;		LDA		#>[_chr_fonts_data]
+;		STA		word_0+1
+;		LDX		#[[_chr_fonts_data_end-_chr_fonts_data]>>3]
+;		STX		byte_2
+;		LDA		_PPU_STATUS
+;		LDA		_ppu_ctrl_shadow
+;		AND		#$FB
+;		STA		_ppu_ctrl_shadow
+;		STA		_PPU_CTRL
+;		LDA		#$00
+;		STA		_PPU_ADDR
+;		STA		_PPU_ADDR
+;_unp_half_inv_mode:
+;		JSR		_font_char_load
+;		JSR		_font_char_load
+;		LDA		word_0
+;		CLC
+;		ADC		#$08
+;		STA		word_0
+;		BCC		.1
+;		INC		word_0+1
+;.1:
+;		DEC		byte_2
+;		BNE		_unp_half_inv_mode
+;		JMP		_render_on
 
 ; =============== S U B	R O U T	I N E =======================================
-_font_char_load:
-		LDY		#$00
-		LDX		#$08
-loc_EBA3:
-		LDA		(word_0),Y
-		STA		_PPU_DATA
-		INY
-		DEX
-		BNE		loc_EBA3
-		RTS
+;_font_char_load:
+;		LDY		#$00
+;		LDX		#$08
+;loc_EBA3:
+;		LDA		(word_0),Y
+;		STA		_PPU_DATA
+;		INY
+;		DEX
+;		BNE		loc_EBA3
+;		RTS
 
-_chr_fonts_data:
-		.BYTE $00,$00,$00,$00,$00,$00,$00,$00
-		.BYTE $38,$4C,$C6,$C6,$C6,$64,$38,$00
-		.BYTE $18,$38,$18,$18,$18,$18,$7E,$00
-		.BYTE $7C,$C6,$0E,$3C,$78,$E0,$FE,$00
-		.BYTE $7E,$0C,$18,$3C,$06,$C6,$7C,$00
-		.BYTE $1C,$3C,$6C,$CC,$FE,$0C,$0C,$00
-		.BYTE $FC,$C0,$FC,$06,$06,$C6,$7C,$00
-		.BYTE $3C,$60,$C0,$FC,$C6,$C6,$7C,$00
-		.BYTE $FE,$C6,$0C,$18,$30,$30,$30,$00
-		.BYTE $7C,$C6,$C6,$7C,$C6,$C6,$7C,$00
-		.BYTE $7C,$C6,$C6,$7E,$06,$0C,$78,$00
-		.BYTE $38,$6C,$C6,$C6,$FE,$C6,$C6,$00
-		.BYTE $FC,$C6,$C6,$FC,$C6,$C6,$FC,$00
-		.BYTE $3C,$66,$C0,$C0,$C0,$66,$3C,$00
-		.BYTE $F8,$CC,$C6,$C6,$C6,$CC,$F8,$00
-		.BYTE $FE,$C0,$C0,$FC,$C0,$C0,$FE,$00
-		.BYTE $FE,$C0,$C0,$FC,$C0,$C0,$C0,$00
-		.BYTE $3E,$60,$C0,$DE,$C6,$66,$7E,$00
-		.BYTE $C6,$C6,$C6,$FE,$C6,$C6,$C6,$00
-		.BYTE $7E,$18,$18,$18,$18,$18,$7E,$00
-		.BYTE $1E,$06,$06,$06,$C6,$C6,$7C,$00
-		.BYTE $C6,$CC,$D8,$F0,$F8,$DC,$CE,$00
-		.BYTE $60,$60,$60,$60,$60,$60,$7E,$00
-		.BYTE $C6,$EE,$FE,$FE,$D6,$C6,$C6,$00
-		.BYTE $C6,$E6,$F6,$FE,$DE,$CE,$C6,$00
-		.BYTE $7C,$C6,$C6,$C6,$C6,$C6,$7C,$00
-		.BYTE $FC,$C6,$C6,$C6,$FC,$C0,$C0,$00
-		.BYTE $7C,$C6,$C6,$C6,$DE,$CC,$7A,$00
-		.BYTE $FC,$C6,$C6,$CE,$F8,$DC,$CE,$00
-		.BYTE $78,$CC,$C0,$7C,$06,$C6,$7C,$00
-		.BYTE $7E,$18,$18,$18,$18,$18,$18,$00
-		.BYTE $C6,$C6,$C6,$C6,$C6,$C6,$7C,$00
-		.BYTE $C6,$C6,$C6,$EE,$7C,$38,$10,$00
-		.BYTE $C6,$C6,$D6,$FE,$FE,$EE,$C6,$00
-		.BYTE $C6,$EE,$7C,$38,$7C,$EE,$C6,$00
-		.BYTE $66,$66,$66,$3C,$18,$18,$18,$00
-		.BYTE $FE,$0E,$1C,$38,$70,$E0,$FE,$00
-		.BYTE $00,$00,$00,$00,$30,$30,$20,$00
-		.BYTE $00,$00,$00,$00,$30,$30,$00,$00
+;_chr_fonts_data:
+;		.BYTE $00,$00,$00,$00,$00,$00,$00,$00
+;		.BYTE $38,$4C,$C6,$C6,$C6,$64,$38,$00
+;		.BYTE $18,$38,$18,$18,$18,$18,$7E,$00
+;		.BYTE $7C,$C6,$0E,$3C,$78,$E0,$FE,$00
+;		.BYTE $7E,$0C,$18,$3C,$06,$C6,$7C,$00
+;		.BYTE $1C,$3C,$6C,$CC,$FE,$0C,$0C,$00
+;		.BYTE $FC,$C0,$FC,$06,$06,$C6,$7C,$00
+;		.BYTE $3C,$60,$C0,$FC,$C6,$C6,$7C,$00
+;		.BYTE $FE,$C6,$0C,$18,$30,$30,$30,$00
+;		.BYTE $7C,$C6,$C6,$7C,$C6,$C6,$7C,$00
+;		.BYTE $7C,$C6,$C6,$7E,$06,$0C,$78,$00
+;		.BYTE $38,$6C,$C6,$C6,$FE,$C6,$C6,$00
+;		.BYTE $FC,$C6,$C6,$FC,$C6,$C6,$FC,$00
+;		.BYTE $3C,$66,$C0,$C0,$C0,$66,$3C,$00
+;		.BYTE $F8,$CC,$C6,$C6,$C6,$CC,$F8,$00
+;		.BYTE $FE,$C0,$C0,$FC,$C0,$C0,$FE,$00
+;		.BYTE $FE,$C0,$C0,$FC,$C0,$C0,$C0,$00
+;		.BYTE $3E,$60,$C0,$DE,$C6,$66,$7E,$00
+;		.BYTE $C6,$C6,$C6,$FE,$C6,$C6,$C6,$00
+;		.BYTE $7E,$18,$18,$18,$18,$18,$7E,$00
+;		.BYTE $1E,$06,$06,$06,$C6,$C6,$7C,$00
+;		.BYTE $C6,$CC,$D8,$F0,$F8,$DC,$CE,$00
+;		.BYTE $60,$60,$60,$60,$60,$60,$7E,$00
+;		.BYTE $C6,$EE,$FE,$FE,$D6,$C6,$C6,$00
+;		.BYTE $C6,$E6,$F6,$FE,$DE,$CE,$C6,$00
+;		.BYTE $7C,$C6,$C6,$C6,$C6,$C6,$7C,$00
+;		.BYTE $FC,$C6,$C6,$C6,$FC,$C0,$C0,$00
+;		.BYTE $7C,$C6,$C6,$C6,$DE,$CC,$7A,$00
+;		.BYTE $FC,$C6,$C6,$CE,$F8,$DC,$CE,$00
+;		.BYTE $78,$CC,$C0,$7C,$06,$C6,$7C,$00
+;		.BYTE $7E,$18,$18,$18,$18,$18,$18,$00
+;		.BYTE $C6,$C6,$C6,$C6,$C6,$C6,$7C,$00
+;		.BYTE $C6,$C6,$C6,$EE,$7C,$38,$10,$00
+;		.BYTE $C6,$C6,$D6,$FE,$FE,$EE,$C6,$00
+;		.BYTE $C6,$EE,$7C,$38,$7C,$EE,$C6,$00
+;		.BYTE $66,$66,$66,$3C,$18,$18,$18,$00
+;		.BYTE $FE,$0E,$1C,$38,$70,$E0,$FE,$00
+;		.BYTE $00,$00,$00,$00,$30,$30,$20,$00
+;		.BYTE $00,$00,$00,$00,$30,$30,$00,$00
 ;		.BYTE $30,$30,$30,$30,$00,$30,$30,$00
-_chr_fonts_data_end:
+;_chr_fonts_data_end:
 
 ; =============== S U B	R O U T	I N E =======================================
 _main00_title_init:
@@ -517,9 +517,11 @@ _main00_title_init:
 		STA		byte_20
 		LDA		#$00
 		JSR		_file_lib_unpack
+		LDA		#$0D
+		JSR		_file_lib_unpack
 		LDA		#$0B
 		JSR		_file_lib_unpack
-		JSR		_fonts_load
+;		JSR		_fonts_load			; REPLACE WITH FONTS!
 		JSR		_title_screen_draw
 		LDA		#$04
 		STA		_delay_counter+1
@@ -616,7 +618,7 @@ _main04_intro_cutscene:
 
 ; =============== S U B	R O U T	I N E =======================================
 _intro_cutscene_sub0:
-		JSR		_fonts_load
+;		JSR		_fonts_load			; NO NEED HERE
 		LDA		#$08
 		JSR		_file_lib_unpack
 		JSR		_screen_clear
@@ -633,7 +635,7 @@ _intro_cutscene_sub1:
 		JSR		_apu_load_safe
 		LDA		#$26
 		JSR		_apu_load_safe
-		JSR		sub_8DC0
+		JSR		_player_pow_state_backup_clear
 		LDA		#$D4
 		STA		byte_5A
 		LDA		#$18
@@ -801,9 +803,11 @@ _main06_game_over:
 		LDA		_sub_sub_idx
 		BNE		loc_84C1
 		JSR		_screen_clear
-		JSR		_fonts_load
+;		JSR		_fonts_load			; REPLACE WITH FONTS
+		LDA		#$0D
+		JSR		_file_lib_unpack
 		JSR		_obj_bufs_reset
-		JSR		sub_8DC0
+		JSR		_player_pow_state_backup_clear
 		LDA		#$7D
 		JSR		_apu_load_safe
 		LDA		#$6F
@@ -915,6 +919,8 @@ _main07_stage_complete_init:
 		BEQ		loc_855E
 		LDA		#$07
 		JSR		_file_lib_unpack
+		LDA		#$0D				; RELOAD FONTS HERE ONLY
+		JSR		_file_lib_unpack
 		JSR		_render_on_nmi_on
 		JMP		loc_8568
 ; ---------------------------------------------------------------------------
@@ -922,7 +928,7 @@ loc_855E:
 		LDA		#$09
 		JSR		_file_lib_unpack
 loc_8568:
-		JSR		_fonts_load
+;		JSR		_fonts_load			; NO NEED HERE ANYMORE
 		LDA		#$1C
 		JSR		_tlm_lib_load
 		INC		_main_sub_idx
@@ -1480,6 +1486,8 @@ _main09_ending:
 _ending02:
 		LDA		#$0A
 		JSR		_file_lib_unpack
+		LDA		#$0D				; RELOAD BLACK BG FONTS FOR STAFF
+		JSR		_file_lib_unpack
 		JSR		_screen_clear
 		JSR		_obj_bufs_reset
 		LDA		#$4A
@@ -1998,7 +2006,7 @@ locret_8D8B:
 		RTS
 
 ; =============== S U B	R O U T	I N E =======================================
-sub_8D8C:
+_player_pow_state_restore:
 		CPY		#$00
 		BNE		loc_8D9B
 		LDA		byte_66
@@ -2015,12 +2023,12 @@ loc_8D9B:
 		RTS
 
 ; =============== S U B	R O U T	I N E =======================================
-sub_8DA6:
+_player_pow_state_save:
 		CPY		#$00
 		BNE		loc_8DB5
-		LDA		byte_500+$1C
+		LDA		byte_500+$1C		; 1P POW
 		STA		byte_66
-		LDA		byte_500+$1D
+		LDA		byte_500+$1D		; 1P STATE 0-reg, 1-weap0, 3-blink
 		STA		byte_67
 		RTS
 ; ---------------------------------------------------------------------------
@@ -2035,7 +2043,7 @@ sub_8DBD:
 		RTS
 
 ; =============== S U B	R O U T	I N E =======================================
-sub_8DC0:
+_player_pow_state_backup_clear:
 		LDA		#$00
 		STA		byte_66
 		STA		byte_67
@@ -3845,7 +3853,7 @@ sub_A84D:
 
 ; =============== S U B	R O U T	I N E =======================================
 sub_A856:
-		JSR		sub_8DA6
+		JSR		_player_pow_state_save
 		JSR		sub_AAA1
 		LDA		#$67
 		JSR		_apu_load_safe
@@ -3858,7 +3866,7 @@ sub_A856:
 
 ; =============== S U B	R O U T	I N E =======================================
 sub_A86F:
-		JSR		sub_8DA6
+		JSR		_player_pow_state_save
 		LDA		byte_500+$11,Y
 		BNE		loc_A88D
 		LDA		byte_500+$1D,Y
@@ -4668,7 +4676,7 @@ loc_ADDA:
 		STA		byte_500+$1D,Y
 		BNE		loc_ADF8
 loc_ADF5:
-		JSR		sub_8D8C
+		JSR		_player_pow_state_restore
 loc_ADF8:
 		LDA		#$01
 		STA		byte_500,Y
@@ -4828,16 +4836,16 @@ sub_AEFB:
 		LDA		byte_500+$1D,Y
 		CMP		#$03
 		BNE		loc_AF14
-		JSR		sub_8D8C
+		JSR		_player_pow_state_restore
 loc_AF14:
-		JSR		sub_8DA6
+		JSR		_player_pow_state_save
 		LDY		#$20
 		LDA		byte_500+$1D,Y
 		CMP		#$03
 		BNE		loc_AF23
-		JSR		sub_8D8C
+		JSR		_player_pow_state_restore
 loc_AF23:
-		JSR		sub_8DA6
+		JSR		_player_pow_state_save
 		TXA
 		TAY
 		LDA		byte_465
@@ -5296,20 +5304,10 @@ sub_B259:
 		RTS
 
 ; =============== S U B	R O U T	I N E =======================================
-sub_B264:
-		LDA		byte_500+5,Y
-		CLC
-		ADC		#$26
-		BNE		sub_B272
-
-; =============== S U B	R O U T	I N E =======================================
 sub_B26C:
 		LDA		byte_500+5,Y
 		CLC
 		ADC		#$1E
-
-; =============== S U B	R O U T	I N E =======================================
-sub_B272:
 		TAX
 		LDA		byte_500+3,Y
 		CLC
@@ -6018,7 +6016,7 @@ sub_B7A5:
 ; ---------------------------------------------------------------------------
 loc_B7AE:
 		STA		byte_C
-		JSR		sub_8D8C
+		JSR		_player_pow_state_restore
 		LDA		byte_C
 		STA		byte_500+$1C,Y
 		LDA		byte_500+$1D,Y
@@ -6317,7 +6315,7 @@ sub_B8FE:
 		TYA
 		PHA
 		LDY		#$00
-		JSR		sub_8DA6
+		JSR		_player_pow_state_save
 		LDA		byte_67
 		CMP		#$03
 		BCC		loc_B91C
@@ -6326,7 +6324,7 @@ sub_B8FE:
 		STA		byte_67
 loc_B91C:
 		LDY		#$20
-		JSR		sub_8DA6
+		JSR		_player_pow_state_save
 		LDA		byte_69
 		CMP		#$03
 		BCC		loc_B92D
@@ -6628,7 +6626,6 @@ loc_BB0F:
 		.WORD sub_BD49
 		.WORD sub_BB5D
 		.WORD sub_BB5D
-off_BB33:
 		.WORD sub_BD73
 		.WORD sub_BD73
 		.WORD sub_2BD41
@@ -7134,13 +7131,6 @@ sub_BEAE:
 		LDA		byte_545,Y
 		CLC
 		ADC		#$03
-		JMP		sub_BEA3
-
-; =============== S U B	R O U T	I N E =======================================
-sub_BEB7:
-		LDA		byte_545,Y
-		CLC
-		ADC		#$25
 		JMP		sub_BEA3
 
 ; =============== S U B	R O U T	I N E =======================================
@@ -8073,7 +8063,7 @@ loc_DB8C:
 		LDY		#$00
 		LDA		(word_0),Y
 		CMP		#$FF
-		BEQ		loc_DBD2
+		BEQ		._file_lib_unpack_exit
 		CMP		#$7F
 		BEQ		loc_DBCA
 		TAY
@@ -8110,7 +8100,7 @@ loc_DBCA:
 		LDA		#$01
 		JSR		_add16
 		JMP		loc_DB67
-loc_DBD2:
+._file_lib_unpack_exit:
 		PLA
 		JSR		_unrom_prg
 		JMP		_render_on_nmi_on
@@ -8126,47 +8116,50 @@ locret_DAF1:
 		RTS
 ; ---------------------------------------------------------------------------
 _lib_files_dst_lo:
-		.BYTE <[_chr02_PO_COME]			; 0
-		.BYTE <[_chr03_PO1D]			; 1
-		.BYTE <[_chr04_PO2D]			; 2
-		.BYTE <[_chr05_PO3D]			; 3
-		.BYTE <[_chr06_PO4D]			; 4
-		.BYTE <[_chr07_PO5D]			; 5
-		.BYTE <[_chr13_PO6D]			; 6
-		.BYTE <[_chr09_POPD_titleB]		; 7
-		.BYTE <[_chr08_titleA]			; 8
-		.BYTE <[_chr14_POED1_endingA]	; 9
-		.BYTE <[_chr15_endingB]			; A
-		.BYTE <[_chr16_PTCD]			; B
-		.BYTE <[_chr17_game_over]		; C
+		.BYTE <[_chr00_common_player_sprites]	; 0
+		.BYTE <[_chr01_stage1]					; 1
+		.BYTE <[_chr02_stage2]					; 2
+		.BYTE <[_chr03_stage3]					; 3
+		.BYTE <[_chr04_stage4]					; 4
+		.BYTE <[_chr05_stage5]					; 5
+		.BYTE <[_chr06_stage6]					; 6
+		.BYTE <[_chr07_stage_complete]			; 7
+		.BYTE <[_chr08_intro]					; 8
+		.BYTE <[_chr09_ending]					; 9
+		.BYTE <[_chr0A_staff]					; A
+		.BYTE <[_chr0B_title]					; B
+		.BYTE <[_chr0C_extra_tonnel_tiles]		; C
+		.BYTE <[_chr0D_font]					; D
 _lib_files_dst_hi:
-		.BYTE >[_chr02_PO_COME]
-		.BYTE >[_chr03_PO1D]
-		.BYTE >[_chr04_PO2D]
-		.BYTE >[_chr05_PO3D]
-		.BYTE >[_chr06_PO4D]
-		.BYTE >[_chr07_PO5D]
-		.BYTE >[_chr13_PO6D]
-		.BYTE >[_chr09_POPD_titleB]
-		.BYTE >[_chr08_titleA]
-		.BYTE >[_chr14_POED1_endingA]
-		.BYTE >[_chr15_endingB]
-		.BYTE >[_chr16_PTCD]
-		.BYTE >[_chr17_game_over]
+		.BYTE >[_chr00_common_player_sprites]
+		.BYTE >[_chr01_stage1]
+		.BYTE >[_chr02_stage2]
+		.BYTE >[_chr03_stage3]
+		.BYTE >[_chr04_stage4]
+		.BYTE >[_chr05_stage5]
+		.BYTE >[_chr06_stage6]
+		.BYTE >[_chr07_stage_complete]
+		.BYTE >[_chr08_intro]
+		.BYTE >[_chr09_ending]
+		.BYTE >[_chr0A_staff]
+		.BYTE >[_chr0B_title]
+		.BYTE >[_chr0C_extra_tonnel_tiles]
+		.BYTE >[_chr0D_font]
 _lib_files_bank:
-		.BYTE _chr02_PO_COME_BANK
-		.BYTE _chr03_PO1D_BANK
-		.BYTE _chr04_PO2D_BANK
-		.BYTE _chr05_PO3D_BANK
-		.BYTE _chr06_PO4D_BANK
-		.BYTE _chr07_PO5D_BANK
-		.BYTE _chr13_PO6D_BANK
-		.BYTE _chr09_POPD_titleB_BANK
-		.BYTE _chr08_titleA_BANK
-		.BYTE _chr14_POED1_endingA_BANK
-		.BYTE _chr15_endingB_BANK
-		.BYTE _chr16_PTCD_BANK
-		.BYTE _chr17_game_over_BANK
+		.BYTE _chr00_common_player_sprites_BANK
+		.BYTE _chr01_stage1_BANK
+		.BYTE _chr02_stage2_BANK
+		.BYTE _chr03_stage3_BANK
+		.BYTE _chr04_stage4_BANK
+		.BYTE _chr05_stage5_BANK
+		.BYTE _chr06_stage6_BANK
+		.BYTE _chr07_stage_complete_BANK
+		.BYTE _chr08_intro_BANK
+		.BYTE _chr09_ending_BANK
+		.BYTE _chr0A_staff_BANK
+		.BYTE _chr0B_title_BANK
+		.BYTE _chr0C_extra_tonnel_tiles_BANK
+		.BYTE _chr0D_font_BANK
 
 ; =============== S U B	R O U T	I N E =======================================
 _unrom_prg:

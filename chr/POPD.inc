@@ -59,7 +59,14 @@
 		.BYTE $81,$01,$07,$00,$89,$E0,$01,$01,$45,$67,$03,$01,$01,$01,$04,$7E
 		.BYTE $81,$0E,$0A,$00,$81,$01,$07,$00,$89,$38,$01,$61,$73,$6B,$47,$01
 		.BYTE $01,$01,$04,$7E,$81,$46,$0A,$00,$81,$01,$08,$00,$89,$01,$03,$03
-		.BYTE $27,$13,$31,$01,$01,$0E,$04,$7E,$81,$70,$7F,$70,$02,$04,$00,$84
+		.BYTE $27,$13,$31,$01,$01,$0E,$04,$7E,$81,$70
+; HERE ends SPRITE tiles pack
+; FIX: two zero bytes are needed to be inserted here in order to unpacked data
+; won't get a random garbage in two bottom lines of the third animation phase
+; of red flag.
+		.BYTE $02,$00
+; HERE starts BG tiles pack
+		.BYTE $7F,$70,$02,$04,$00,$84
 		.BYTE $11,$00,$79,$02,$04,$00,$88,$0E,$10,$CA,$68,$FE,$FE,$4A,$D6,$04
 		.BYTE $00,$87,$FE,$0C,$B4,$28,$FE,$FE,$FE,$09,$00,$09,$FF,$87,$93,$93
 		.BYTE $FF,$A5,$FF,$91,$FF,$09,$00,$95,$7E,$76,$6E,$56,$6E,$7E,$00,$00

@@ -1,5 +1,8 @@
 @echo off
 
+del !greenprev.nes
+rename !greenb.nes !greenprev.nes
+
 cd nas
 
 echo assemble...
@@ -7,7 +10,7 @@ echo assemble...
 rem to draw dasm output
 dasm bank0.nas -f3 -obank0.bin
 rem to generate lst and err filrs
-dasm bank1.nas -f3 -l!bank1.lst -obank1.bin >> !err.log
+dasm bank1.nas -f3 -l!greenb.lst -obank1.bin >> !err.log
 
 call :dodasm bank2.nas > NUL
 call :dodasm bank3.nas > NUL
@@ -42,5 +45,10 @@ copy /b !greenb.nes ..\!greenb.nes > NUL
 del !greenb.nes > NUL
 
 cd ..
+
+echo ===OLD ROM===
+if exist !greenprev.nes nas\m3checksum !greenprev.nes
+echo ===NEW ROM===
+if exist !greenb.nes nas\m3checksum !greenb.nes
 
 echo done.

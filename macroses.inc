@@ -33,25 +33,33 @@ _F 	EQU	$10
 _G 	EQU	$11
 _H 	EQU	$12
 _I 	EQU	$13
-_J 	EQU	$14
+_J 	EQU	$14 ; JP
+_ap EQU $14 ; US
 _K 	EQU	$15
 _L 	EQU	$16
 _M 	EQU	$17
 _N 	EQU	$18
-_O 	EQU	$19
+_O 	EQU	$19 ; JP
+_kn EQU $19 ; US
 _P 	EQU	$1A
-_Q 	EQU	$1B
+_Q 	EQU	$1B ; JP
+_j  EQU $1B ; US
 _R 	EQU	$1C
 _S 	EQU	$1D
 _T 	EQU	$1E
 _U 	EQU	$1F
 _V 	EQU	$20
 _W 	EQU	$21
-_X 	EQU	$22
+_X 	EQU	$22 ; JP
+_ex EQU $22 ; US
 _Y 	EQU	$23
-_cl	EQU	$24
-_dt	EQU	$25
-
+_Z 	EQU	$24
+_cl	EQU	$25 ; JP
+_dt	EQU	$25 ; US
+_dd EQU $26 ; US
+_sp EQU $27
+_aP EQU $7A ; stage complete '
+_eX	EQU $FF
 ;--------------------A-P-U----------------------
 
 ;--------------D-E-B-U-G-G-I-N-G----------------

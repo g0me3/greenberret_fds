@@ -4125,30 +4125,30 @@ _ppu_queue_pos_set:
 
 ; ---------------------------------------------------------------------------
 _tlm_lib:
-		.WORD _tlm01_1_player
+		.WORD $FFFF
 		.WORD _tlm01_1_player
 		.WORD _tlm02_2_players
 		.WORD _tlm03_play_select
 		.WORD _tlm04_konami_1897
-		.WORD _tlm05_dummy
+		.WORD $FFFF
 		.WORD _tlm06_pal
 		.WORD _tlm07_blank
-		.WORD _tlm08_ab
+		.WORD _tlm08_hi
 		.WORD _tlm09_1p
 		.WORD _tlm0A_2p
-		.WORD _tlm0B_please_set
-		.WORD _tlm0C_err
+		.WORD $FFFF
+		.WORD $FFFF
 		.WORD _tlm0D_blank
-		.WORD _tlm0E_d0fe
-		.WORD _tlm0F_d0fe
+		.WORD _tlm0E_1p_pow
+		.WORD _tlm0F_2p_pow
 		.WORD _tlm10_game_over
 		.WORD _tlm11_blank
 		.WORD _tlm12_blank
 		.WORD _tlm13_pal
 		.WORD _tlm14_continue
-		.WORD _tlm17_yes
+		.WORD _tlm15_yes
 		.WORD _tlm16_no
-		.WORD _tlm17_yes
+		.WORD $FFFF
 		.WORD _tlm18_pal
 		.WORD _tlm19_bg_pal
 		.WORD _tlm1A_bg_pal
@@ -4200,8 +4200,8 @@ _tlm_lib:
 		.WORD _tlm48_ending
 		.WORD _tlm49_ending
 		.WORD _tlm4A_pal
-		.WORD _tlm4B_loading
-		.WORD _tlm4C_pal
+		.WORD $FFFF
+		.WORD $FFFF
 		.WORD _tlm4D_pal
 		.WORD _tlm4E_pal
 		.WORD _tlm4F_pal
@@ -4209,101 +4209,105 @@ _tlm_lib:
 		.WORD _tlm51_pal
 		.WORD _tlm52_pal
 		.WORD _tlm53_bg_pal
-		.WORD _tlm54_your_mission
+		.WORD $FFFF
 		.WORD _tlm55_bg_pal
 		.WORD _tlm56_bg_pal
-_tlm54_your_mission:
-		.WORD $A520
-		.BYTE $23,$19,$1F,$1C,$00,$17,$13,$1D,$1D,$13,$19,$18
-		.BYTE $FD
-		.WORD $E820
-		.BYTE $0E,$0F,$1D,$1E,$1C,$19,$23,$00,$0F,$18,$0F,$17,$23
-		.BYTE $FD
-		.WORD $2721
-		.BYTE $1D,$0F,$0D,$1C,$0F,$1E,$00,$21,$0F,$0B,$1A,$19,$18,$26
-		.BYTE $FD
-		.WORD $8A21
-		.BYTE $11,$19,$19,$0E,$00,$16,$1F,$0D,$15,$26
+_tlm01_1_player:
+		.WORD $EE22
+		.BYTE _1,__,_P,_L,_A,_Y,_E,_R
 		.BYTE $FE
-_tlm0B_please_set:
-		.WORD	$E921
-		.BYTE $1A,$16,$0F,$0B,$1D,$0F,$00,$1D,$0F,$1E,$00,$00
+_tlm02_2_players:
+		.WORD $0E23
+		.BYTE _2,__,_P,_L,_A,_Y,_E,_R,_S
 		.BYTE $FE
-_tlm0C_err:
-		.WORD $ED21
-		.BYTE $0F,$1C,$1C,$00,$00,$00
-		.BYTE $FE
-_tlm4B_loading:
-		.WORD $ED21
-		.BYTE $16,$19,$0B,$0E,$13,$18,$11,$00,$00
-		.BYTE $FE
-_tlm4C_pal:
-		.BYTE $3F,$00,$0F,$0F,$0F,$20,$0F,$0F,$0F,$20,$0F,$0F,$0F,$20,$0F,$0F
-		.BYTE $0F,$20,$FE
 _tlm03_play_select:
 		.WORD $AB22
-		.BYTE $1A,$16,$0B,$23,$00,$1D,$0F,$16,$0F,$0D,$1E
+		.BYTE _P,_L,_A,_Y,__,_S,_E,_L,_E,_C,_T
 		.BYTE $FE
 _tlm04_konami_1897:
 		.WORD $4A22
 		.BYTE $F9
-		.BYTE $00,$15,$19,$18,$0B,$17,$13,$00,$02,$0A,$09,$08
-		.BYTE $FE
-_tlm01_1_player:
-		.WORD $EE22
-		.BYTE $02,$00,$1A,$16,$0B,$23,$0F,$1C
-		.BYTE $FE
-_tlm02_2_players:
-		.WORD $0E23
-		.BYTE $03,$00,$1A,$16,$0B,$23,$0F,$1C,$1D
-		.BYTE $FE
-_tlm14_continue:
-		.WORD $0B22
-		.BYTE $0D,$19,$18,$1E,$13,$18,$1F,$0F
-		.BYTE $FE
-_tlm17_yes:
-		.WORD $4E22
-		.BYTE $23,$0F,$1D
-		.BYTE $FE
-_tlm16_no:
-		.WORD $8E22
-		.BYTE $18,$19
+		.BYTE __,_K,_0,_N,_A,_M,_I,__,_1,_9,_8,_9
 		.BYTE $FE
 _tlm07_blank:
 		.WORD $6020
-		.BYTE $00
+		.BYTE __
 		.BYTE $FF
-_tlm0D_blank:
-		.WORD $7920
-		.BYTE $00
-		.BYTE $FF
-_tlm08_ab:
+_tlm08_hi:
 		.WORD $4B20
-		.BYTE $0B,$0C,$00
+		.BYTE $0B,$0C,__
 		.BYTE $FF
 _tlm09_1p:
 		.WORD $4020
-		.BYTE $02,$0E,$00
+		.BYTE _1,$0E,__
 		.BYTE $FF
 _tlm0A_2p:
 		.WORD $5620
-		.BYTE $03,$0E,$00
+		.BYTE _2,$0E,__
 		.BYTE $FF
-_tlm0E_d0fe:
+_tlm0D_blank:
+		.WORD $7920
+		.BYTE __
+		.BYTE $FF
+_tlm0E_1p_pow:
 		.WORD $6820
 		.BYTE $0E,$01,$10,$0F
 		.BYTE $FF
-_tlm0F_d0fe:
+_tlm0F_2p_pow:
 		.WORD $7320
 		.BYTE $0E,$01,$10,$0F
 		.BYTE $FF
+_tlm10_game_over:
+		.WORD $8B21
+		.BYTE _G,_A,_M,_E,__,_0,_V,_E,_R
+		.BYTE $FE
+_tlm11_blank:
+		.WORD $6020
+		.BYTE __,__,__,__,__,__,__,__,__,__,__,__,__,__
+		.BYTE $FE
+_tlm12_blank:
+		.WORD $7320
+		.BYTE __,__,__,__,__,__,__,__,__,__,__,__,__
+		.BYTE $FE
+_tlm14_continue:
+		.WORD $0B22
+		.BYTE _C,_0,_N,_T,_I,_N,_U,_E
+		.BYTE $FE
+_tlm15_yes:
+		.WORD $4E22
+		.BYTE _Y,_E,_S
+		.BYTE $FE
+_tlm16_no:
+		.WORD $8E22
+		.BYTE _N,_0
+		.BYTE $FE
+_tlm1D_staff:
+		.WORD $ED20
+		.BYTE _S,_T,_A,_F,_F
+		.BYTE $FE
+_tlm1E_blank:
+		.WORD $6021
+		.BYTE __,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__
+		.BYTE __,__,__,__,__
+		.BYTE $FE
+_tlm1F_blank:
+		.WORD $A021
+		.BYTE __,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__
+		.BYTE __,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__
+		.BYTE $FE
+_tlm20_please_push_start_button:
+		.WORD $A321
+		.BYTE _P,_L,_E,_A,_S,_E,__,_P,_U,_S,_H,__,_S,_T,_A,_R,_T,__,_B,_U,_T,_T,_0,_N
+		.BYTE $FE
+_tlm21_blank:
+		.WORD $ED20
+		.BYTE __,__,__,__,__
+		.BYTE $FE
+
 _tlm06_pal:
 		.BYTE $3F,$00,$0F,$00,$10,$30,$0F,$19,$27,$15,$0F,$15,$26,$10,$0F,$27
 		.BYTE $16,$21,$0F,$0C,$26,$30,$0F,$0C,$2C,$30,$0F,$12,$26,$30,$0F,$06
 		.BYTE $30,$30,$FE
-_tlm05_dummy:
-		.WORD $0020
-		.BYTE $FE
 _tlm4D_pal:
 		.BYTE $3F,$00,$0F,$3B,$00,$30,$0F,$10,$00,$30,$0F,$19,$00,$09,$0F,$3B
 		.BYTE $17,$07,$0F,$12,$0F,$27,$0F,$16,$0F,$38,$0F,$27,$0F,$38,$0F,$20
@@ -4337,18 +4341,6 @@ _tlm55_bg_pal:
 _tlm56_bg_pal:
 		.BYTE $3F,$00,$0F,$00,$10,$30,$0F,$10,$06,$07,$0F,$10,$00,$0F,$0F,$10
 		.BYTE $00,$0F,$FE
-_tlm10_game_over:
-		.WORD $8B21
-		.BYTE $11,$0B,$17,$0F,$00,$19,$20,$0F,$1C
-		.BYTE $FE
-_tlm11_blank:
-		.WORD $6020
-		.BYTE $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-		.BYTE $FE
-_tlm12_blank:
-		.WORD $7320
-		.BYTE $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-		.BYTE $FE
 _tlm13_pal:
 		.BYTE $3F,$00,$0F,$1B,$00,$30,$0F,$10,$00,$30,$0F,$19,$00,$09,$0F,$1B
 		.BYTE $17,$07,$0F,$12,$0F,$27,$0F,$16,$0F,$38,$0F,$00,$06,$16,$0F,$27
@@ -4370,29 +4362,6 @@ _tlm1C_pal:
 		.BYTE $3F,$00,$0F,$16,$06,$30,$0F,$08,$18,$30,$0F,$27,$16,$21,$0F,$27
 		.BYTE $16,$21,$0F,$12,$0F,$27,$0F,$16,$0F,$38,$0F,$2A,$0F,$38,$0F,$16
 		.BYTE $0F,$27,$FE
-_tlm1D_staff:
-		.WORD $ED20
-		.BYTE $1D,$1E,$0B,$10,$10
-		.BYTE $FE
-_tlm1E_blank:
-		.WORD $6021
-		.BYTE $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-		.BYTE $00,$00,$00,$00,$00
-		.BYTE $FE
-_tlm1F_blank:
-		.WORD $A021
-		.BYTE $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-		.BYTE $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-		.BYTE $FE
-_tlm20_please_push_start_button:
-		.WORD $A321
-		.BYTE $1A,$16,$0F,$0B,$1D,$0F,$00,$1A,$1F,$1D,$12,$00,$1D,$1E,$0B,$1C
-		.BYTE $1E,$00,$0C,$1F,$1E,$1E,$19,$18
-		.BYTE $FE
-_tlm21_blank:
-		.WORD $ED20
-		.BYTE $00,$00,$00,$00,$00
-		.BYTE $FE
 _tlm22_bg_pal:
 		.BYTE $3F,$00,$0F,$0B,$00,$30,$0F,$0B,$09,$37,$0F,$0B,$01,$3A,$0F,$0B
 		.BYTE $17,$27,$FE
@@ -4405,6 +4374,11 @@ _tlm24_bg_pal:
 _tlm25_bg_pal:
 		.BYTE $3F,$00,$30,$16,$06,$30,$30,$08,$18,$30,$30,$27,$16,$21,$30,$27
 		.BYTE $16,$21,$FE
+_tlm4A_pal:
+		.BYTE $3F,$00,$0F,$16,$06,$30,$0F,$08,$18,$30,$0F,$27,$16,$21,$0F,$27
+		.BYTE $16,$21,$0F,$12,$01,$27,$0F,$16,$07,$38,$0F,$20,$0F,$38,$0F,$1A
+		.BYTE $09,$27,$FE
+
 _tlm26_ending:
 		.BYTE $21,$0C,$2F,$28,$28,$28,$28,$28,$28,$3F,$FE
 _tlm27_ending:
@@ -4485,10 +4459,6 @@ _tlm48_ending:
 _tlm49_ending:
 		.BYTE $22,$64,$94,$94,$95,$94,$95,$94,$27,$94,$95,$94,$95,$94,$95,$94
 		.BYTE $94,$95,$94,$94,$95,$94,$94,$27,$94,$95,$95,$A4,$B6,$A4,$FE
-_tlm4A_pal:
-		.BYTE $3F,$00,$0F,$16,$06,$30,$0F,$08,$18,$30,$0F,$27,$16,$21,$0F,$27
-		.BYTE $16,$21,$0F,$12,$01,$27,$0F,$16,$07,$38,$0F,$20,$0F,$38,$0F,$1A
-		.BYTE $09,$27,$FE
 		SECTION_END "TLM LIB"
 
 		SECTION_START
@@ -4607,161 +4577,311 @@ _type_msg_lib:
 		.WORD _type_msg20
 		.WORD _type_msg22
 		.WORD _type_msg24
+#if LANGUAGE=LANG_JP
 _type_msg00_your_mission_is:
 		.WORD $A520
-		.BYTE $23,$19,$1F,$1C,$00,$17,$13,$1D,$1D,$13,$19,$18
+		.BYTE _Y,_0,_U,_R,__,_M,_I,_S,_S,_I,_0,_N
 		.BYTE $41
-		.BYTE $20,$C8,$0E,$0F,$1D,$1E,$1C,$19,$23,$00,$0F,$18,$0F,$17,$23
+		.WORD $C820
+		.BYTE _D,_E,_S,_T,_R,_0,_Y,__,_E,_N,_E,_M,_Y
 		.BYTE $41
-		.BYTE $20,$E7,$1D,$0F,$0D,$1C,$0F,$1E,$00,$21,$0F,$0B,$1A,$19,$18,$26
+		.WORD $E720
+		.BYTE _S,_E,_C,_R,_E,_T,__,_W,_E,_A,_P,_0,_N,_dt
 		.BYTE $41
-		.BYTE $21,$EA,$11,$19,$19,$0E,$00,$16,$1F,$0D,$15,$26
+		.WORD $EA21
+		.BYTE _G,_0,_0,_D,__,_L,_U,_C,_K,_dt
 		.BYTE $40
 _type_msg02_1st_target_overcome:
 		.WORD $CE20
-		.BYTE $21,$0F,$16,$16,$00,$0E,$19,$18,$0F
+		.BYTE _W,_E,_L,_L,__,_D,_0,_N,_E
 		.BYTE $41
 		.WORD $2B21
-		.BYTE $02,$1D,$1E,$00,$1E,$0B,$1C,$11,$0F,$1E,$00,$19,$20,$0F,$1C,$0D
-		.BYTE $19,$17,$0F
+		.BYTE _1,_S,_T,__,_T,_A,_R,_G,_E,_T,__,_0,_V,_E,_R,_C,_0,_M,_E
 		.BYTE $40
 _type_msg04_2nd_target_overcome:
 		.WORD $CE20
-		.BYTE $21,$0F,$16,$16,$00,$0E,$19,$18,$0F
+		.BYTE _W,_E,_L,_L,__,_D,_0,_N,_E
 		.BYTE $41
 		.WORD $2B21
-		.BYTE $03,$18,$0E,$00,$1E,$0B,$1C,$11,$0F,$1E,$00,$19,$20,$0F,$1C,$0D
-		.BYTE $19,$17,$0F
+		.BYTE _2,_N,_D,__,_T,_A,_R,_G,_E,_T,__,_0,_V,_E,_R,_C,_0,_M,_E
 		.BYTE $40
 _type_msg06_3rd_target_overcome:
 		.WORD $CE20
-		.BYTE $21,$0F,$16,$16,$00,$0E,$19,$18,$0F
+		.BYTE _W,_E,_L,_L,__,_D,_0,_N,_E
 		.BYTE $41
-		.BYTE $21,$2B,$04,$1C,$0E,$00,$1E,$0B,$1C,$11,$0F,$1E,$00,$19,$20,$0F
-		.BYTE $1C,$0D,$19,$17,$0F
+		.WORD $2B21
+		.BYTE _3,_R,_D,__,_T,_A,_R,_G,_E,_T,__,_0,_V,_E,_R,_C,_0,_M,_E
 		.BYTE $40
 _type_msg08_4th_target_overcome:
 		.WORD $CE20
-		.BYTE $21,$0F,$16,$16,$00,$0E,$19,$18,$0F
+		.BYTE _W,_E,_L,_L,__,_D,_0,_N,_E
 		.BYTE $41
-		.BYTE $21,$2B,$05,$1E,$12,$00,$1E,$0B,$1C,$11,$0F,$1E,$00,$19,$20,$0F
-		.BYTE $1C,$0D,$19,$17,$0F
+		.WORD $2B21
+		.BYTE _4,_T,_H,__,_T,_A,_R,_G,_E,_T,__,_0,_V,_E,_R,_C,_0,_M,_E
 		.BYTE $40
 _type_msg0A_5th_last_target_overcome:
 		.WORD $CE20
-		.BYTE $21,$0F,$16,$16,$00,$0E,$19,$18,$0F
+		.BYTE _W,_E,_L,_L,__,_D,_0,_N,_E
 		.BYTE $41
 		.WORD $0B21
-		.BYTE $06,$1E,$12,$00,$1E,$0B,$1C,$11,$0F,$1E,$00,$19,$20,$0F,$1C,$0D
-		.BYTE $19,$17,$0F
+		.BYTE _5,_T,_H,__,_T,_A,_R,_G,_E,_T,__,_0,_V,_E,_R,_C,_0,_M,_E
 		.BYTE $41
 		.WORD $4921
-		.BYTE $15,$0F,$0F,$1A,$00,$10,$13,$11,$12,$1E,$13,$18,$11,$00,$00,$23
-		.BYTE $19,$1F,$00,$0B,$1C,$0F
+		.BYTE _K,_E,_E,_P,__,_F,_I,_G,_H,_T,_I,_N,_G,__,__,_Y,_0,_U,__,_A,_R,_E
 		.BYTE $41
 		.WORD $6C21
-		.BYTE $0B,$16,$17,$19,$1D,$1E,$00,$1E,$12,$0F,$1C,$0F
+		.BYTE _A,_L,_M,_0,_S,_T,__,_T,_H,_E,_R,_E
 		.BYTE $40
 _type_msg0C_ending:
 		.WORD $8420
-		.BYTE $23,$19,$1F,$27,$12,$0B,$20,$0F,$27,$1D,$0B,$20,$0F,$0E,$27,$1E
-		.BYTE $12,$0F,$27,$21,$19,$1C,$16,$0E
+		.BYTE _Y,_0,_U,_sp,_H,_A,_V,_E,_sp,_S,_A,_V,_E,_D,_sp,_T,_H,_E,_sp,_W,_0,_R,_L,_D
 		.BYTE $41
 		.WORD $C820
-		.BYTE $0D,$19,$18,$11,$1C,$0B,$1E,$1F,$16,$0B,$1E,$13,$19,$18,$1D
+		.BYTE _C,_0,_N,_G,_R,_A,_T,_U,_L,_A,_T,_I,_0,_N,_S
 		.BYTE $41
 		.WORD $0421
-		.BYTE $1A,$0F,$0B,$0D,$0F,$27,$12,$0B,$1D,$27,$0B,$1C,$1C,$13,$20,$0F
-		.BYTE $0E,$27,$0B,$1E,$27,$16,$0B,$1D,$1E
+		.BYTE _P,_E,_A,_C,_E,_sp,_H,_A,_S,_sp,_A,_R,_R,_I,_V,_E,_D,_sp,_A,_T,_sp,_L,_A,_S,_T
 		.BYTE $40
 _type_msg0E:
 		.WORD $6421
-		.BYTE $1A,$1C,$19,$11,$1C,$0B,$17,$17,$0F,$0E,$00,$0C,$23
+		.BYTE _P,_R,_0,_G,_R,_A,_M,_M,_E,_D,__,_B,_Y
 		.BYTE $41
 		.WORD $A921
-		.BYTE $18,$0B,$18,$13,$21,$0B,$00,$18,$19,$00,$12,$13,$0E,$0F,$19
+		.BYTE _N,_A,_N,_I,_W,_A,__,_N,_0,__,_H,_I,_D,_E,_0
 		.BYTE $40
 _type_msg10:
 		.WORD $6421
-		.BYTE $0D,$12,$0B,$1C,$0B,$0D,$1E,$0F,$1C,$00,$0E,$0F,$1D,$13,$11,$18
+		.BYTE _C,_H,_A,_R,_A,_C,_T,_E,_R,__,_D,_E,_S,_I,_G,_N
 		.BYTE $41
 		.WORD $A921
-		.BYTE $15,$0F,$13,$15,$19,$00,$0B,$18,$0E,$00,$12,$0B,$1C,$0B,$0D,$12
-		.BYTE $0B,$18
+		.BYTE _K,_E,_I,_K,_0,__,_A,_N,_D,__,_H,_A,_R,_A,_C,_H
+		.BYTE _A,_N
 		.BYTE $40
 _type_msg12:
 		.WORD $6421
-		.BYTE $0D,$12,$0B,$1C,$0B,$0D,$1E,$0F,$1C,$00,$0E,$0F,$1D,$13,$11,$18
+		.BYTE _C,_H,_A,_R,_A,_C,_T,_E,_R,__,_D,_E,_S,_I,_G,_N
 		.BYTE $41
 		.WORD $A821
-		.BYTE $11,$19,$15,$13,$11,$0F,$18,$00,$23,$19,$1D,$12,$13,$17,$19,$1E
-		.BYTE $19
+		.BYTE _G,_0,_K,_I,_G,_E,_N,__,_Y,_0,_S,_H,_I,_M,_0,_T
+		.BYTE _0
 		.BYTE $40
 _type_msg14:
 		.WORD $6421
-		.BYTE $1D,$19,$1F,$18,$0E,$00,$0E,$0F,$1D,$13,$11,$18
+		.BYTE _S,_0,_U,_N,_D,__,_D,_E,_S,_I,_G,_N
 		.BYTE $41
 		.WORD $A821
-		.BYTE $0D,$12,$0B,$1C,$23,$00,$1D,$0B,$0E,$0B,$15,$13,$0D,$12,$13
+		.BYTE _C,_H,_A,_R,_Y,__,_S,_A,_D,_A,_K,_I,_C,_H,_I
 		.BYTE $40
 _type_msg16:
 		.WORD $6421
-		.BYTE $0E,$13,$1C,$0F,$0D,$1E,$0F,$0E,$00,$0C,$23
+		.BYTE _D,_I,_R,_E,_C,_T,_E,_D,__,_B,_Y
 		.BYTE $41
 		.WORD $AA21
-		.BYTE $1A,$12,$0B,$24,$0F,$1C,$00,$0B,$1E,$1D,$1F,$15,$19
+		.BYTE _P,_H,_A,_Z,_E,_R,__,_A,_T,_S,_U,_K,_0
 		.BYTE $40
 _type_msg18:
 		.WORD $6421
-		.BYTE $20,$13,$1D,$1F,$0B,$16,$00,$0E,$0F,$1D,$13,$11,$18
+		.BYTE _V,_I,_S,_U,_A,_L,__,_D,_E,_S,_I,_G,_N
 		.BYTE $41
 		.WORD $A821
-		.BYTE $1D,$12,$13,$17,$19,$18,$0F,$1E,$0B,$00,$15,$0F,$18,$0D,$12,$0B
-		.BYTE $18
+		.BYTE _S,_H,_I,_M,_0,_N,_E,_T,_A,__,_K,_E,_N,_C,_H,_A
+		.BYTE _N
 		.BYTE $40
 _type_msg1A:
 		.WORD $6421
-		.BYTE $20,$13,$1D,$1F,$0B,$16,$00,$0E,$0F,$1D,$13,$11,$18
+		.BYTE _V,_I,_S,_U,_A,_L,__,_D,_E,_S,_I,_G,_N
 		.BYTE $41
 		.WORD $AA21
-		.BYTE $0E,$0B,$13,$0C,$1F,$1E,$1D,$1F,$00,$17,$0B,$1C,$13
+		.BYTE _D,_A,_I,_B,_U,_T,_S,_U,__,_M,_A,_R,_I
 		.BYTE $40
 _type_msg1C:
 		.WORD $6421
-		.BYTE $17,$1F,$1D,$13,$0D,$00,$0C,$23
+		.BYTE _M,_U,_S,_I,_C,__,_B,_Y
 		.BYTE $41
 		.WORD $A721
-		.BYTE $1C,$1F,$1D,$12,$0F,$1C,$00,$1D,$0B,$15,$0B,$17,$19,$1E,$19
+		.BYTE _R,_U,_S,_H,_E,_R,__,_S,_A,_K,_A,_M,_0,_T,_0
 		.BYTE $40
 _type_msg1E:
 		.WORD $6421
-		.BYTE $17,$1F,$1D,$13,$0D,$00,$0C,$23
+		.BYTE _M,_U,_S,_I,_C,__,_B,_Y
 		.BYTE $41
 		.WORD $A721
-		.BYTE $13,$15,$1F,$00,$13,$15,$1F,$00,$17,$13,$24,$1F,$1E,$0B,$18,$13
+		.BYTE _I,_K,_U,__,_I,_K,_U,__,_M,_I,_Z,_U,_T,_A,_N,_I
 		.BYTE $40
 _type_msg20:
 		.WORD $6421
-		.BYTE $17,$1F,$1D,$13,$0D,$00,$0C,$23
+		.BYTE _M,_U,_S,_I,_C,__,_B,_Y
 		.BYTE $41
 		.WORD $A921
-		.BYTE $12,$0F,$20,$13,$17,$0F,$1E,$0B,$00,$1D,$0B,$1E,$19,$0F
+		.BYTE _H,_E,_V,_I,_M,_E,_T,_A,__,_S,_A,_T,_0,_E
 		.BYTE $40
 _type_msg22:
 		.WORD $6421
-		.BYTE $17,$1F,$1D,$13,$0D,$00,$0C,$23
+		.BYTE _M,_U,_S,_I,_C,__,_B,_Y
 		.BYTE $41
 		.WORD $A921
-		.BYTE $18,$0B,$18,$0E,$0B,$00,$0B,$0E,$0B,$0D,$12,$13
+		.BYTE _N,_A,_N,_D,_A,__,_A,_D,_A,_C,_H,_I
 		.BYTE $40
 _type_msg24:
 		.WORD $6421
-		.BYTE $1D,$1A,$0F,$0D,$13,$0B,$16,$00,$1E,$12,$0B,$18,$15,$1D
+		.BYTE _S,_P,_E,_C,_I,_A,_L,__,_T,_H,_A,_N,_K,_S
 		.BYTE $41
 		.WORD $A721
-		.BYTE $12,$0B,$1D,$12,$13,$0C,$19,$1F,$00,$0B,$18,$0E,$00,$1D,$12,$13
-		.BYTE $18,$19,$0C,$1F
+		.BYTE _H,_A,_S,_H,_I,_B,_0,_U,__,_A,_N,_D,__,_S,_H,_I,_N,_0,_B,_U
 		.BYTE $40
+#endif
+#if LANGUAGE=LANG_EN
+
+_type_msg00_your_mission_is:
+		.WORD $A520
+		.BYTE _Y,_0,_U,_R,__,_M,_I,_S,_S,_I,_0,_N,_dd
+		.BYTE $41
+		.WORD $C820
+		.BYTE _D,_E,_S,_T,_R,_0,_Y,__,_T,_H,_E,__,_E,_N,_E,_M,_Y,_ap,_S
+		.BYTE $41
+		.WORD $E720
+		.BYTE _S,_E,_C,_R,_E,_T,__,_W,_E,_A,_P,_0,_N,_dt
+		.BYTE $41
+		.WORD $EA21
+		.BYTE _G,_0,_0,_D,__,_L,_U,_C,_K,_ex
+		.BYTE $40
+_type_msg02_1st_target_overcome:
+		.WORD $CE20
+		.BYTE _W,_E,_L,_L,__,_D,_0,_N,_E,_eX
+		.BYTE $41
+		.WORD $2B21
+		.BYTE _1,_S,_T,__,_T,_A,_R,_G,_E,_T,__,_0,_V,_E,_R,_C,_0,_M,_E
+		.BYTE $40
+_type_msg04_2nd_target_overcome:
+		.WORD $CE20
+		.BYTE _W,_E,_L,_L,__,_D,_0,_N,_E,_eX
+		.BYTE $41
+		.WORD $2B21
+		.BYTE _2,_N,_D,__,_T,_A,_R,_G,_E,_T,__,_0,_V,_E,_R,_C, _0,_M,_E
+		.BYTE $40
+_type_msg06_3rd_target_overcome:
+		.WORD $CE20
+		.BYTE _W,_E,_L,_L,__,_D,_0,_N,_E,_eX
+		.BYTE $41
+		.WORD $2B21
+		.BYTE _3,_R,_D,__,_T,_A,_R,_G,_E,_T,__,_0,_V,_E,_R,_C,_0,_M,_E
+		.BYTE $40
+_type_msg08_4th_target_overcome:
+		.WORD $CE20
+		.BYTE _W,_E,_L,_L,__,_D,_0,_N,_E,_eX
+		.BYTE $41
+		.WORD $2B21
+		.BYTE _4,_T,_H,__,_T,_A,_R,_G,_E,_T,__,_0,_V,_E,_R,_C,_0,_M,_E
+		.BYTE $40
+_type_msg0A_5th_last_target_overcome:
+		.WORD $CE20
+		.BYTE _W,_E,_L,_L,__,_D,_0,_N,_E,_eX
+		.BYTE $41
+		.WORD $0B21
+		.BYTE _5,_T,_H,__,_T,_A,_R,_G,_E,_T,__,_0,_V,_E,_R,_C,_0,_M,_E
+		.BYTE $41
+		.WORD $4921
+		.BYTE _K,_E,_E,_P,__,_F,_I,_G,_H,_T,_I,_N,_G,_eX,__,_Y,_0,_U,_ap,_R,_E
+		.BYTE $41
+		.WORD $6C21
+		.BYTE _A,_L,_M,_0,_S,_T,__,_T,_H,_E,_R,_E,_dt
+		.BYTE $40
+_type_msg0C_ending:
+		.WORD $8420
+		.BYTE _Y,_0,_U,_sp,_H,_A,_V,_E,_sp,_S,_A,_V,_E,_D,_sp,_T,_H,_E,_sp,_W,_0,_R,_L,_D,_eX
+		.BYTE $41
+		.WORD $C820
+		.BYTE _C,_0,_N,_G,_R,_A,_T,_U,_L,_A,_T,_I,_0,_N,_S,_eX
+		.BYTE $41
+		.WORD $0421
+		.BYTE _P,_E,_A,_C,_E,_sp,_H,_A,_S,_sp,_A,_R,_R,_I,_V,_E,_D,_sp,_A,_T,_sp,_L,_A,_S,_T,_dt
+		.BYTE $40
+_type_msg0E:
+		.WORD $6421
+		.BYTE _P,_R,_0,_G,_R,_A,_M,_M,_E,_D,__,_B,_Y
+		.BYTE $41
+		.WORD $A921
+		.BYTE _N,_A,_N,_I,_W,_A,__,_N,_0,__,_H,_I,_D,_E,_0
+		.BYTE $40
+_type_msg10:
+		.WORD $6421
+		.BYTE _C,_H,_A,_R,_A,_C,_T,_E,_R,__,_D,_E,_S,_I,_G,_N
+		.BYTE $41
+		.WORD $A921
+		.BYTE _M,_A,_D,_A,_M,_U,__,_K,_E,_I,_K,_0
+		.BYTE $40
+_type_msg12:
+		.WORD $6421
+		.BYTE _C,_H,_A,_R,_A,_C,_T,_E,_R,__,_D,_E,_S,_I,_G,_N
+		.BYTE $41
+		.WORD $A821
+		.BYTE _G,_0,_K,_I,_G,_E,_N,__,_Y,_0,_S,_H,_I,_M,_0,_T,_0
+		.BYTE $40
+_type_msg14:
+		.WORD $6421
+		.BYTE _S,_0,_U,_N,_D,__,_D,_E,_S,_I,_G,_N
+		.BYTE $41
+		.WORD $A821
+		.BYTE _C,_H,_A,_R,_Y,__,_S,_A,_D,_A,_K,_I,_C,_H,_I
+		.BYTE $40
+_type_msg16:
+		.WORD $6421
+		.BYTE _D,_I,_R,_E,_C,_T,_E,_D,__,_B,_Y
+		.BYTE $41
+		.WORD $AA21
+		.BYTE _P,_H,_A,_Z,_E,_R,__,_A,_T,_S,_U,_K,_0
+		.BYTE $40
+_type_msg18:
+		.WORD $6421
+		.BYTE _V,_I,_S,_U,_A,_L,__,_D,_E,_S,_I,_G,_N
+		.BYTE $41
+		.WORD $A921
+		.BYTE _K,_E,_N,_j,_I,__,_S,_H,_I,_M,_0,_N,_E,_T,_A
+		.BYTE $40
+_type_msg1A:
+		.WORD $6421
+		.BYTE _V,_I,_S,_U,_A,_L,__,_D,_E,_S,_I,_G,_N
+		.BYTE $41
+		.WORD $AA21
+		.BYTE _D,_A,_I,_B,_U,_T,_S,_U,__,_M,_A,_R,_I
+		.BYTE $40
+_type_msg1C:
+		.WORD $6421
+		.BYTE _M,_U,_S,_I,_C,__,_B,_Y
+		.BYTE $41
+		.WORD $A721
+		.BYTE _R,_U,_S,_H,_E,_R,__,_S,_A,_K,_A,_M,_0,_T,_0
+		.BYTE $40
+_type_msg1E:
+		.WORD $6421
+		.BYTE _M,_U,_S,_I,_C,__,_B,_Y
+		.BYTE $41
+		.WORD $A721
+		.BYTE _I,_K,_U,__,_I,_K,_U,__,_M,_I,_Z,_U,_T,_A,_N,_I
+		.BYTE $40
+_type_msg20:
+		.WORD $6421
+		.BYTE _M,_U,_S,_I,_C,__,_B,_Y
+		.BYTE $41
+		.WORD $A921
+		.BYTE _H,_E,_V,_I,_M,_E,_T,_A,__,_S,_A,_T,_0,_E
+		.BYTE $40
+_type_msg22:
+		.WORD $6421
+		.BYTE _M,_U,_S,_I,_C,__,_B,_Y
+		.BYTE $41
+		.WORD $A921
+		.BYTE _N,_A,_N,_D,_A,__,_A,_D,_A,_C,_H,_I
+		.BYTE $40
+_type_msg24:
+		.WORD $6421
+		.BYTE _S,_P,_E,_C,_I,_A,_L,__,_T,_H,_A,_N,_K,_S
+		.BYTE $41
+		.WORD $A721
+		.BYTE _0,_N,_I,_Y,_A,_N,_K,_0,__,_S,_H,_I,_N,_0,_B,_U
+		.BYTE $40
+#endif
+
 		SECTION_END "TYPE MSG LIB"
 
 		SECTION_START

@@ -4,17 +4,17 @@
 		BANK_START $02
 
 		SECTION_START
-		FAR_PTR _chr14_POED1_endingA
-		INCLUDE "../chr/POED1.inc"
-		SECTION_END "CHR Ending A (POED1)"
+		FAR_PTR _chr09_ending
+		INCLUDE "..\CHR\POED1.inc"
+		SECTION_END "CHR ENDING"
 
 		SECTION_START
-		FAR_PTR _chr02_PO_COME
-		INCLUDE "../chr/PO_COME.inc"
-		SECTION_END "CHR PO_COME"
+		FAR_PTR _chr00_common_player_sprites
+		INCLUDE "..\CHR\PO_COME.inc"
+		SECTION_END "CHR COMM PLAYER SPITES"
 
 		SECTION_START
-		FAR_PTR _chr08_titleA
+		FAR_PTR _chr08_intro
 		.BYTE $00,$10,$20,$00,$90,$07,$0F,$0F,$07,$01,$2C,$02,$00,$18,$10,$10
 		.BYTE $38,$7E,$7F,$FF,$E7,$08,$00,$81,$C1,$07,$00,$99,$80,$C0,$E0,$E0
 		.BYTE $70,$D0,$B0,$70,$40,$20,$10,$10,$88,$28,$48,$88,$70,$00,$20,$20
@@ -298,15 +298,15 @@
 		.BYTE $0A,$D0,$04,$D5,$D0,$00,$A0,$A0,$00,$B4,$00,$48,$00,$00,$20,$20
 		.BYTE $00,$30,$00,$48,$04,$00,$84,$90,$01,$34,$25,$05,$00,$83,$40,$B4
 		.BYTE $01,$FF
-		SECTION_END "CHR Title A"
+		SECTION_END "CHR INTRO"
 
 		SECTION_START
-		FAR_PTR _chr09_POPD_titleB
-		INCLUDE "../chr/POPD.inc"
-		SECTION_END "CHR Title B (POPD)"
+		FAR_PTR _chr07_stage_complete
+		INCLUDE "..\CHR\POPD.inc"
+		SECTION_END "CHR STAGE COMPLETE"
 
 		SECTION_START
-		FAR_PTR _chr15_endingB
+		FAR_PTR _chr0A_staff
 		.BYTE $20,$10,$8F,$07,$07,$03,$00,$00,$2C,$02,$00,$00,$08,$0C,$07,$01
 		.BYTE $2C,$02,$11,$00,$A1,$80,$C0,$E0,$20,$10,$10,$10,$30,$00,$00,$00
 		.BYTE $C0,$60,$C0,$A0,$40,$00,$00,$20,$20,$20,$00,$20,$00,$70,$00,$20
@@ -449,6 +449,6 @@
 		.BYTE $F0,$E0,$00,$E2,$80,$E0,$F4,$04,$0C,$14,$F4,$04,$82,$02,$06,$91
 		.BYTE $15,$9D,$32,$74,$74,$24,$04,$04,$61,$05,$02,$04,$04,$54,$74,$04
 		.BYTE $26,$24,$26,$26,$06,$06,$12,$00,$26,$24,$26,$26,$06,$06,$12,$FF
-		SECTION_END "CHR Ending B"
+		SECTION_END "CHR STAFF SPRITES"
 
 		BANK_END 2,$C000
