@@ -83,7 +83,7 @@ loc_8115:
 		BNE		loc_8130
 		LDA		#$01
 		STA		_busy_flags
-		JSR		_get_inputA
+		JSR		_get_input
 		JSR		_main_sub_exec
 		JSR		_obj_compiler
 		JSR		_sprite_manager
@@ -285,7 +285,7 @@ loc_8210:
 		RTS
 
 ; =============== S U B	R O U T	I N E =======================================
-_get_inputA:
+_get_input:
 		JSR		_read_pads
 		JSR		_merge_pads
 loc_EA52:
@@ -299,13 +299,13 @@ loc_EA52:
 		BNE		loc_EA52
 		CPY		_pads_press
 		BNE		loc_EA52
-		BEQ		_calc_padsB
+		BEQ		_calc_pads
 		JSR		_read_pads
 		LDA		word_0
 		STA		_pads_held
 		LDA		word_0+1
 		STA		_pads_held+1
-		LDX		#$03
+		LDX		#$01
 loc_EA75:
 		LDA		_pads_press,X
 		TAY
@@ -319,8 +319,7 @@ loc_EA75:
 
 ; =============== S U B	R O U T	I N E =======================================
 _read_pads:
-		LDX		byte_FB
-		INX
+		LDX		#$01
 		STX		_PAD0_REG
 		DEX
 		STX		_PAD0_REG
@@ -341,7 +340,7 @@ loc_E9F7:
 		RTS
 
 ; =============== S U B	R O U T	I N E =======================================
-_calc_padsB:
+_calc_pads:
 		LDX		#$01
 loc_EA27:
 		LDA		_pads_press,X
