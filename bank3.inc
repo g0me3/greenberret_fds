@@ -5,7 +5,7 @@
 
 		SECTION_START
 		FAR_PTR _chr01_stage1
-		INCLUDE "../CHR/PO1D.inc"
+		INCLUDE "../chr/PO1D.inc"
 		SECTION_END "CHR STAGE 1"
 
 		SECTION_START
@@ -40,12 +40,12 @@
 
 		SECTION_START
 		FAR_PTR _chr06_stage6
-		INCLUDE "../CHR/PO6D.inc"
+		INCLUDE "../chr/PO6D.inc"
 		SECTION_END "CHR STAGE 6"
 
 		SECTION_START
 		FAR_PTR _chr0B_title
-		INCLUDE "../CHR/PTCD.inc"
+		INCLUDE "../chr/PTCD.inc"
 		SECTION_END "CHR TITLE"
 
 		SECTION_START
